@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "31960306736",
+    "project_id": "rideme-8b48f",
+    "storage_bucket": "rideme-8b48f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31960306736:android:04e6c3c3f922655b9749f5",
+        "android_client_info": {
+          "package_name": "com.appridemeinc.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH0asdC0wlG_beXswcmGtJkdTG4EAtyNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31960306736:android:5e67d7e6d34bb1c99749f5",
+        "android_client_info": {
+          "package_name": "com.appridemeinc.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH0asdC0wlG_beXswcmGtJkdTG4EAtyNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
