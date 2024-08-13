@@ -17,8 +17,13 @@
   "home": "Maison",
   "gift": "Cadeau",
   "enter": "Entrer",
+  "aboutRideMe":"À propos de RideMe",
   "cash": "Espèces",
+  "safetyNotice":"Veuillez utiliser ces boutons en cas d'urgence. L'aide vous parviendra dans les plus brefs délais",
+
   "parcel": "Colis",
+  "helloThere":"Bonjour, {name}",
+
   "call": "Appeler",
   "email": "E-mail",
   "number": "Numéro",

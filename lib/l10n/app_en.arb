@@ -19,12 +19,15 @@
   "days": "Days",
   "rate": "Rate",
   "save": "Save",
+  "aboutRideMe":"About RideMe",
   "call": "Call",
   "enter": "Enter",
   "promo": "Promo",
   "about": "About",
   "email": "Email",
   "retry": "Retry",
+  "safetyNotice":"Please use these buttons incase of any emergency. Help will get to you as soon as possible",
+
   "phone": "phone",
   "other": "Other",
   "total": "Total",
@@ -325,6 +328,16 @@
   "genderUpdateSuccess": "Gender updated successfully",
   "dobUpdateSuccess": "Date of birth updated successfully",
   "calculateFare":"Calculate Fare",
+  "helloThere":"Hello there, {name}",
+  "@helloThere":{
+    "placeholders":{
+      "name":{
+        "type":"String",
+        "example":"Simon"
+      }
+    }
+  },
+
   "signInWithSocial": "Sign in with {provider}",
   "@signInWithSocial": {
     "placeholders": {
