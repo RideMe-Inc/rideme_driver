@@ -328,6 +328,33 @@
   "genderUpdateSuccess": "Gender updated successfully",
   "dobUpdateSuccess": "Date of birth updated successfully",
   "calculateFare":"Calculate Fare",
+
+
+  "newToRideMe":"New to RideMe? Sign Up",
+  "enterYourPhoneNumberInfo":"A verification code will be sent to this phone number to confirm account.",
+  "termsOfService":"terms of service",
+  "conditions":"condtions",
+  "byContinuing":"By continuing you agree to the",
+  "enterYourOtpCode":"Enter your OTP code",
+  "enterYourOtpCodeInfo":"Enter the code sent to",
+  "enterEmailToComplete":"Enter your email address to complete your profile.",
+  "emailAddress":"Email address",
+  "enterFullName":"Enter Full name",
+  "enterFullNameInfo":"This will help drivers identity you easily.",
+  "firstNameHint":"Enter your first name",
+  "lastNameHInt":"Enter your last name",
+
+  "didntReceiveACode":"Didn't receive a code ({timer})",
+  "@didntReceiveACode":{
+    "placeholders":{
+      "timer":{
+        "type":"String",
+        "example":"1:59"
+      }
+    }
+  },
+
+
   "helloThere":"Hello there, {name}",
   "@helloThere":{
     "placeholders":{
