@@ -17,8 +17,13 @@
   "home": "Maison",
   "gift": "Cadeau",
   "enter": "Entrer",
+  "aboutRideMe":"À propos de RideMe",
   "cash": "Espèces",
+  "safetyNotice":"Veuillez utiliser ces boutons en cas d'urgence. L'aide vous parviendra dans les plus brefs délais",
+
   "parcel": "Colis",
+  "helloThere":"Bonjour, {name}",
+
   "call": "Appeler",
   "email": "E-mail",
   "number": "Numéro",
@@ -324,11 +329,27 @@
   "movingOutOfServiceArea": "Déménagement hors zone de service.",
   "dob": "Date de naissance",
   "gender": "Gender",
+
+  "newToRideMe":"Nouveau sur RideMe ? S'inscrire",
+  "enterYourPhoneNumberInfo":"Un code de vérification sera envoyé à ce numéro de téléphone pour confirmer le compte.",
+  "termsOfService":"conditions d'utilisation",
+  "conditions":"conditions",
+  "byContinuing":"En continuant, vous acceptez les",
+  "enterYourOtpCode":"Entrez votre code OTP",
+  "enterYourOtpCodeInfo":"Entrez le code envoyé à",
+  "enterEmailToComplete":"Entrez votre adresse e-mail pour compléter votre profil.",
+  "emailAddress":"Adresse e-mail",
+  "enterFullName":"Entrez le nom complet",
+  "enterFullNameInfo":"Cela aidera les conducteurs à vous identifier facilement.",
+  "firstNameHint":"Entrez votre prénom",
+  "lastNameHInt":"Entrez votre nom de famille",
+
   "genderDesc": "Veuillez sélectionner le sexe",
   "dobDesc": "Veuillez définir la date de naissance",
   "selectGender": "Sélectionnez votre sexe",
   "selectDOB": "Sélectionnez votre date de naissance",
   "genderUpdateSuccess": "Le genre a été mis à jour avec succès",
   "dobUpdateSuccess": "Date de naissance mise à jour avec succès",
+  "didntReceiveACode":"Je n'ai pas reçu de code ({timer})",
   "calculateFare":"Calculer le tarif"
 }
