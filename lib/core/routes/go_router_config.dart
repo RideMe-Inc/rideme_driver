@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:rideme_driver/features/authentication/presentation/pages/landing_page.dart';
 
 import 'package:rideme_driver/iam.dart';
 
@@ -9,7 +10,7 @@ final GoRouter goRouterConfiguration = GoRouter(
     GoRoute(
       name: 'root',
       path: '/',
-      builder: (context, state) => const IAMScreenImplementer(),
+      builder: (context, state) => const LandingPage(),
     ),
   ],
 );
