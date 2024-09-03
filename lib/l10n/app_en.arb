@@ -345,6 +345,7 @@
   "lastNameHInt":"Enter your last name",
 
   "enterPersonalDetails":"Enter your Personal Details",
+  "enterPersonalDetailsInfo":"Enter your personal details to help us know you better.",
   "addressLocation":"Address location",
   "socialSecurityNumber":"Social security number",
   "vehicleInformation":"Vehicle Information",
@@ -373,6 +374,7 @@
   "licenseNumberHint":"Enter license number",
   "pictureOfLicense":"Picture of license",
   "photoCheck":"Photo Check",
+  "photoCheckInfo":"Take selfie when ready",
   "uploadPassportSizedPicture":"Upload passport sized picture",
   "pledgeOfGoodBehaviour":"Pledge of good behaviour",
   "pledgeIntro":"As a driver of RideMe, I pledge to:",
@@ -426,6 +428,7 @@
   "earnWithRideMe":"Earn with RideMe",
   "earnWithRideMeInfo":"Drive at your own time and earn extra income with a company that cares about its drivers",
   "signUp":"Sign up",
+  
   
   
 

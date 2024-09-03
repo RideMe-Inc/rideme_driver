@@ -5,12 +5,25 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
 import 'package:rideme_driver/core/urls/urls.dart';
+import 'package:rideme_driver/features/informationResources/data/datasource/remoteds.dart';
+import 'package:rideme_driver/features/informationResources/data/repository/information_resource_repo_impl.dart';
+import 'package:rideme_driver/features/informationResources/domain/repository/information_resources_repository.dart';
+import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_makes.dart';
+import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_models.dart';
+import 'package:rideme_driver/features/informationResources/presentation/bloc/information_resources_bloc.dart';
 import 'package:rideme_driver/features/localization/data/datasources/localds.dart';
 import 'package:rideme_driver/features/localization/data/repository/repo_impl.dart';
 import 'package:rideme_driver/features/localization/domain/repository/localization_repo.dart';
 import 'package:rideme_driver/features/localization/domain/usecases/change_locale.dart';
 import 'package:rideme_driver/features/localization/domain/usecases/get_current_locale.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
+import 'package:rideme_driver/features/media/data/datasources/localds.dart';
+import 'package:rideme_driver/features/media/data/repositories/media_repository_impl.dart';
+import 'package:rideme_driver/features/media/domain/repositories/media_repository.dart';
+import 'package:rideme_driver/features/media/domain/usecases/convert_image_to_base64.dart';
+import 'package:rideme_driver/features/media/domain/usecases/select_image_from_gallery.dart';
+import 'package:rideme_driver/features/media/domain/usecases/take_picture_with_camera.dart';
+import 'package:rideme_driver/features/media/presentation/bloc/media_bloc.dart';
 import 'package:rideme_driver/features/permissions/data/datasources/localds.dart';
 import 'package:rideme_driver/features/permissions/data/repository/repository_impl.dart';
 import 'package:rideme_driver/features/permissions/domain/repository/permissions_repo.dart';
@@ -18,6 +31,26 @@ import 'package:rideme_driver/features/permissions/domain/usecases/request_all_n
 import 'package:rideme_driver/features/permissions/domain/usecases/request_location_permission.dart';
 import 'package:rideme_driver/features/permissions/domain/usecases/request_notif_permission.dart';
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
+import 'package:rideme_driver/features/user/data/datasources/localds.dart';
+import 'package:rideme_driver/features/user/data/datasources/remoteds.dart';
+import 'package:rideme_driver/features/user/data/repositories/user_repository_impl.dart';
+import 'package:rideme_driver/features/user/domain/repositories/user_repository.dart';
+import 'package:rideme_driver/features/user/domain/usecases/change_availability.dart';
+import 'package:rideme_driver/features/user/domain/usecases/create_driver_license.dart';
+import 'package:rideme_driver/features/user/domain/usecases/create_vehicle.dart';
+import 'package:rideme_driver/features/user/domain/usecases/delete_account.dart';
+import 'package:rideme_driver/features/user/domain/usecases/edit_driver_license.dart';
+import 'package:rideme_driver/features/user/domain/usecases/edit_profile.dart';
+import 'package:rideme_driver/features/user/domain/usecases/edit_vehicle.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_all_rider_license.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_all_vehicles.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_cached_user_info.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_cached_user_without_user.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_support_contacts.dart';
+import 'package:rideme_driver/features/user/domain/usecases/get_user_profile.dart';
+import 'package:rideme_driver/features/user/domain/usecases/rider_photo_check.dart';
+import 'package:rideme_driver/features/user/domain/usecases/update_cached_user.dart';
+import 'package:rideme_driver/features/user/presentation/bloc/user_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:web_socket_client/web_socket_client.dart';
@@ -36,6 +69,15 @@ init() async {
   //localizations
   initLocalization();
 
+  //media
+  initMedia();
+
+  //user
+  initUser();
+
+  //data
+
+  initData();
   //urls
   sl.registerLazySingleton(() => URLS());
 
@@ -170,6 +212,212 @@ initLocalization() {
   //datasources
   sl.registerLazySingleton<LocalizationLocalDataSource>(
     () => LocalizationLocalDataSourceImpl(
+      sharedPreferences: sl(),
+    ),
+  );
+}
+
+//!INIT DATA
+initData() {
+  //bloc
+  sl.registerFactory(
+    () => InformationResourcesBloc(
+      getAllVehicleMakes: sl(),
+      getAllVehicleModels: sl(),
+    ),
+  );
+
+  //usecases
+
+  sl.registerLazySingleton(
+    () => GetAllVehicleMakes(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetAllVehicleModels(
+      repository: sl(),
+    ),
+  );
+
+  //repository
+  sl.registerLazySingleton<InformationResourcesRepository>(
+    () => InformationResourcesRepositoryImpl(
+      networkInfo: sl(),
+      remoteDatastore: sl(),
+    ),
+  );
+
+  //datasources
+  sl.registerLazySingleton<InformationResourcesRemoteDatastore>(
+    () => InformationResourcesRemoteDatastoreImpl(
+      urls: sl(),
+      client: sl(),
+    ),
+  );
+}
+
+//!init media
+
+initMedia() {
+  //bloc
+  sl.registerFactory(
+    () => MediaBloc(
+        takePictureWithCamera: sl(),
+        selectImageFromGallery: sl(),
+        convertImageToBase64: sl()),
+  );
+
+  //usecases
+  sl.registerLazySingleton(
+    () => TakePictureWithCamera(repository: sl()),
+  );
+  sl.registerLazySingleton(
+    () => SelectImageFromGallery(repository: sl()),
+  );
+  sl.registerLazySingleton(
+    () => ConvertImageToBase64(repository: sl()),
+  );
+
+  //repository
+
+  sl.registerLazySingleton<MediaRepository>(
+    () => MediaRepositoryImpl(localDatasource: sl()),
+  );
+
+  //datasources
+  sl.registerLazySingleton<MediaLocalDatasource>(
+    () => MediaLocalDatasourceImpl(imagePicker: sl()),
+  );
+}
+
+//! init USER
+
+initUser() {
+  //bloc
+
+  sl.registerFactory(
+    () => UserBloc(
+      createDriverLicense: sl(),
+      editDriverLicense: sl(),
+      getUserProfile: sl(),
+      editProfile: sl(),
+      createVehicle: sl(),
+      editVehicle: sl(),
+      getAllRiderVehicles: sl(),
+      getAllRidersLicense: sl(),
+      changeAvailability: sl(),
+      getCachedUserInfo: sl(),
+      updateCachedUser: sl(),
+      getCachedUserWithoutSafety: sl(),
+      riderPhotoCheck: sl(),
+      getSupportContacts: sl(),
+      deleteAccount: sl(),
+    ),
+  );
+
+  //usecases
+
+  sl.registerLazySingleton(
+    () => ChangeAvailability(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => RiderPhotoCheck(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => CreateVehicle(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => EditVehicle(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetAllRiderVehicles(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => CreateDriverLicense(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => EditDriverLicense(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetCachedUserInfo(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetCachedUserWithoutSafety(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetAllRidersLicense(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetUserProfile(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => EditProfile(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => UpdateCachedUser(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetSupportContacts(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => DeleteAccount(
+      repository: sl(),
+    ),
+  );
+
+  //repository
+
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      remoteDatasource: sl(),
+      localDatasource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  //datasources
+
+  sl.registerLazySingleton<UserRemoteDatasource>(
+    () => UserRemoteDatasourceImpl(
+      urls: sl(),
+      client: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<UserLocalDatasource>(
+    () => UserLocalDatasourceImpl(
       sharedPreferences: sl(),
     ),
   );

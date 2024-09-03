@@ -38,7 +38,7 @@ class _PhoneNumberTextFieldState extends State<PhoneNumberTextField> {
       cursorColor: AppColors.rideMeBlackNormalHover,
 
       initialValue: widget.number,
-      countries: const ['US'],
+      countries: const ['US', 'GH'],
       // selectorButtonOnErrorPadding: 0,
       onInputChanged: widget.onInputChanged,
       selectorConfig: const SelectorConfig(),

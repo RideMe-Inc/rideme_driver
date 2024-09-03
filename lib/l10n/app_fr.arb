@@ -316,7 +316,7 @@
   "discountOffer": "{percentage}% Éligible",
   "tripRiderIs": "Le voyageur est {rider}",
   "signInWithSocial": "Connectez-vous avec {provider}",
-  "mustBeAtLeast": "Doit contenir au moins {nombre} caractères",
+  "mustBeAtLeast": "Doit contenir au moins {number} caractères",
   "arrivingIn": "{numOfMinutes, plural, one{Arrivée dans 1 minute} other{Arrivée dans {numOfMinutes} minutes}}",
   "ongoingTrips": "{numOfTrips, plural, one{Vous avez 1 voyage en cours} other{Vous avez {numOfTrips} voyages en cours}}",
   "foundBetterService": "J'ai trouvé un meilleur service",
@@ -386,6 +386,7 @@
 "licenseNumberHint":"Entrez le numéro de permis",
 "pictureOfLicense":"Photo du permis",
 "photoCheck":"Vérification de la photo",
+"photoCheckInfo":"Prenez un selfie lorsque vous êtes prêt",
 "uploadPassportSizedPicture":"Téléchargez une photo de format passeport",
 "pledgeOfGoodBehaviour":"Engagement de bon comportement",
 "pledgeIntro":"En tant que conducteur de RideMe, je m'engage à :",
@@ -440,6 +441,9 @@
 "earnWithRideMeInfo":"Conduisez à votre propre rythme et gagnez un revenu supplémentaire avec une entreprise qui se soucie de ses conducteurs",
 "signUp":"Inscrivez-vous",
 "cashout":"Retirer ${amount}",
-"pickUpCustomer":"Ramassage de {name}"
+"pickUpCustomer":"Ramassage de {name}",
+"enterPersonalDetailsInfo":"Entrez vos informations personnelles pour nous aider à mieux vous connaître."
+
+
 
 }

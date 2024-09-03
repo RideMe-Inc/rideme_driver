@@ -1,21 +1,30 @@
 import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
+
+import 'package:rideme_driver/features/user/data/models/user_model.dart';
 import 'package:rideme_driver/features/user/domain/entities/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class UserLocalDatasource {
   // cache user information
   Future cacheUserInfo(User user);
+
+  //get rider information
+
+  Future<UserModel> getUserInfo();
+
+  //get user information without safety
+  UserModel getUserInfoWithoutSafety();
+
+  //update user information
+  Future updateUserInfo(Map<String, dynamic> params);
 }
 
 class UserLocalDatasourceImpl implements UserLocalDatasource {
   final SharedPreferences sharedPreferences;
   final String cacheKey = 'USER_CACHE_KEY';
-  final ImagePicker imagePicker;
 
   UserLocalDatasourceImpl({
     required this.sharedPreferences,
-    required this.imagePicker,
   });
 
   //! CACHE USER INFO
@@ -24,5 +33,46 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
     final jsonString = jsonEncode(user.toMap());
 
     return sharedPreferences.setString(cacheKey, jsonString);
+  }
+
+  //! GET RIDER INFORMATION
+  @override
+  Future<UserModel> getUserInfo() async {
+    final jsonString = sharedPreferences.getString(cacheKey);
+
+    if (jsonString != null) {
+      return UserModel.fromJson(json.decode(jsonString));
+    } else {
+      throw Exception('Cache Error');
+    }
+  }
+
+  //! UPDATE RIDER INFORMATION
+  @override
+  Future updateUserInfo(Map<String, dynamic> params) async {
+    final jsonString = sharedPreferences.getString(cacheKey);
+
+    if (jsonString == null) throw Exception('Cache Error');
+
+    final decodedString = json.decode(jsonString) as Map<String, dynamic>;
+
+    decodedString.addAll(params);
+
+    final encodedString = jsonEncode(decodedString);
+
+    return sharedPreferences.setString(cacheKey, encodedString);
+  }
+
+  //!GET RIDER INFO WITHOUT SAFETY
+
+  @override
+  UserModel getUserInfoWithoutSafety() {
+    final jsonString = sharedPreferences.getString(cacheKey);
+
+    if (jsonString != null) {
+      return UserModel.fromJson(json.decode(jsonString));
+    } else {
+      throw Exception('Cache Error');
+    }
   }
 }
