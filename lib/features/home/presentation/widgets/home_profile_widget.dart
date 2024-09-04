@@ -11,7 +11,7 @@ import 'package:rideme_driver/features/user/presentation/widgets/user_initials.d
 import '../../../../core/theme/app_colors.dart';
 
 class HomeUserProfileWidget extends StatelessWidget {
-  final User user;
+  final User? user;
 
   const HomeUserProfileWidget({
     super.key,
@@ -20,7 +20,7 @@ class HomeUserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isOffline = (user.status ?? 'offline') == 'offline';
+    bool isOffline = (user?.availability ?? 'offline') == 'offline';
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,12 +30,14 @@ class HomeUserProfileWidget extends StatelessWidget {
             CircleAvatar(
               radius: Sizes.height(context, 0.024),
               backgroundColor: AppColors.rideMeBlackNormal,
-              backgroundImage: user.profileUrl == null
+              backgroundImage: user?.profileUrl == null
                   ? null
-                  : CachedNetworkImageProvider(user.profileUrl!),
-              child: user.profileUrl != null
+                  : CachedNetworkImageProvider(user!.profileUrl!),
+              child: user?.profileUrl != null
                   ? null
-                  : UserInitials(name: '${user.firstName} ${user.lastName}'),
+                  : UserInitials(
+                      name:
+                          '${user?.firstName ?? 'U'} ${user?.lastName ?? 'U'}'),
             ),
             Space.width(context, 0.04),
             Column(
@@ -43,7 +45,7 @@ class HomeUserProfileWidget extends StatelessWidget {
               children: [
                 // number
                 Text(
-                  '${user.firstName} ${user.lastName}',
+                  '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
                   style: context.textTheme.displayLarge
                       ?.copyWith(fontWeight: FontWeight.w500, fontSize: 20),
                 ),
@@ -79,7 +81,7 @@ class HomeUserProfileWidget extends StatelessWidget {
         Row(
           children: [
             Text(
-              '${user.rating ?? 0.0}',
+              '${user?.rating ?? 0.0}',
               style: context.textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.rideMeBlackNormal,

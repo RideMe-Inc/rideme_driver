@@ -155,7 +155,8 @@ class AuthenticationRemoteDatasourceImpl
 
     Map<String, String> headers = urls.headers;
 
-    headers.addAll(<String, String>{"Authorization": params['bearer']});
+    headers.addAll(
+        <String, String>{"Authorization": "Bearer ${params['bearer']}"});
 
     // get device fcm token
 

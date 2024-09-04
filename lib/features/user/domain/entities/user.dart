@@ -3,7 +3,13 @@ import 'package:equatable/equatable.dart';
 class User extends Equatable {
   final num? id, rating;
   final bool? requestedDeletion, hasVehicle, hasLicense, photoCheckRequired;
-  final String? firstName, lastName, phone, email, profileUrl, status;
+  final String? firstName,
+      lastName,
+      phone,
+      email,
+      profileUrl,
+      status,
+      availability;
 
   final UserOngoingTrips? ongoingTrip;
 
@@ -20,6 +26,7 @@ class User extends Equatable {
     required this.ongoingTrip,
     required this.hasLicense,
     required this.hasVehicle,
+    required this.availability,
     required this.photoCheckRequired,
   });
 
@@ -36,6 +43,7 @@ class User extends Equatable {
         "profile_url": profileUrl,
         "status": status,
         "requested_deletion": requestedDeletion,
+        "availability": availability,
         "ongoing_trip": ongoingTrip?.toMap(),
       };
 
@@ -54,6 +62,7 @@ class User extends Equatable {
         hasLicense,
         hasVehicle,
         photoCheckRequired,
+        availability,
       ];
 }
 

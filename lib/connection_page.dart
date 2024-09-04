@@ -155,7 +155,6 @@ class _ConnectionPageState extends State<ConnectionPage> {
               }
 
               if (state is GetUserProfileError) {
-                print(state.message);
                 context.goNamed('noInternet');
               }
             },

@@ -18,7 +18,7 @@ import 'package:rideme_driver/features/home/presentation/provider/home_provider.
 import 'package:rideme_driver/features/home/presentation/widgets/home_profile_widget.dart';
 
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
-import 'package:rideme_driver/features/user/domain/entities/user.dart';
+import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
 import 'package:rideme_driver/injection_container.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   late AppLocalizations appLocalizations;
 
   late HomeProvider homeProvider;
+  late UserProvider userProvider;
 
   final permissionBloc = sl<PermissionBloc>();
 
@@ -81,6 +82,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     appLocalizations = AppLocalizations.of(context)!;
     homeProvider = context.watch<HomeProvider>();
+    userProvider = context.watch<UserProvider>();
 
     return Scaffold(
       drawer: const HomeDrawer(),
@@ -236,22 +238,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Space.height(context, 0.016),
-                        const HomeUserProfileWidget(
-                            user: User(
-                          id: null,
-                          rating: null,
-                          firstName: 'Isaiah',
-                          lastName: 'Amo Mensah',
-                          phone: null,
-                          email: null,
-                          profileUrl: null,
-                          status: 'offline',
-                          requestedDeletion: null,
-                          ongoingTrip: null,
-                          hasLicense: null,
-                          hasVehicle: null,
-                          photoCheckRequired: null,
-                        )),
+                        HomeUserProfileWidget(
+                          user: userProvider.user,
+                        ),
                         Space.height(context, 0.037),
                       ],
                     ),
