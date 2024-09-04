@@ -17,7 +17,7 @@ class URLS {
   }) {
     const baseUrl = kDebugMode ? 'dev.rideme.app' : 'dev.rideme.app';
     //  const testBaseUrl = 'testv3.shaqexpress.com';
-    String lastRoute = '/v1/$locale/users${endpoint.value}';
+    String lastRoute = '/v1/$locale/drivers${endpoint.value}';
 
     String parsedRoute = urlParser.urlPasser(urlParameters, lastRoute);
 

@@ -22,9 +22,8 @@ enum Endpoints {
   //! LOCATION
   myLocation(value: '/geo-data'),
 
-  vehicleMakes(value: '/configs/vehicle'),
-  vehicleModels(value: '/configs/vehicle/:id/models'),
-  ;
+  vehicleMakes(value: '/data/vehicle-makes'),
+  vehicleColors(value: '/data/vehicle-colors');
 
   final String value;
 

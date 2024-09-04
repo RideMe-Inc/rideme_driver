@@ -101,10 +101,10 @@ class _LicenseInformationPageState extends State<LicenseInformationPage>
         "licenseId": licenseId,
       },
       "body": {
-        "number": licenseNumber.text,
+        "license_number": licenseNumber.text,
         "front_image": frontBase64,
         "back_image": backBase64,
-        "expiry": expiryDate,
+        "date_of_expiry": expiryDate,
       }
     };
 
@@ -191,7 +191,7 @@ class _LicenseInformationPageState extends State<LicenseInformationPage>
               }
 
               if (state is CreateDriverLicenseLoaded) {
-                context.goNamed('vehicleDocument');
+                context.goNamed('photoCheck');
               }
 
               if (state is EditDriverLicenseLoaded) {

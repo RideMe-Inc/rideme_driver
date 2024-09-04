@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
 import 'package:rideme_driver/core/theme/app_theme.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
+import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
 import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
 import 'package:rideme_driver/firebase_options.dart';
@@ -44,6 +45,9 @@ main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => AuthenticationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeProvider(),
         ),
       ],
       child: Consumer<LocaleProvider>(

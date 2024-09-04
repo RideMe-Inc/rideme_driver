@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/widgets/loaders/loading_indicator.dart';
 import 'package:rideme_driver/core/widgets/popups/error_popup.dart';
 import 'package:rideme_driver/core/widgets/popups/success_popup.dart';
@@ -125,7 +124,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           if (state is GetUserProfileLoaded) {
             //udpate provider with user data and navigate to home
             context.read<UserProvider>().updateUserInfo = state.user;
-            context.goNamed('home');
+            userBloc.navigateRiderBasedOnProfileCompletion(state.user, context);
           }
 
           if (state is GetUserProfileError) {
@@ -191,19 +190,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   }
 
                   if (state is VerifyOtpLoaded) {
-                    if (widget.userExist) {
-                      //send an event to fetch the user data
+                    getUserProfile(
+                        state.authenticationInfo.authorization!.token!);
 
-                      getUserProfile(
-                          state.authenticationInfo.authorization!.token!);
-
-                      context.read<AuthenticationProvider>().updateToken =
-                          state.authenticationInfo.authorization?.token;
-                      return;
-                    }
-                    context.goNamed('additionalInfo', queryParameters: {
-                      "token": widget.token,
-                    });
+                    context.read<AuthenticationProvider>().updateToken =
+                        state.authenticationInfo.authorization?.token;
+                    return;
                   }
                 },
                 builder: (context, state) {

@@ -1,23 +1,34 @@
 import 'package:go_router/go_router.dart';
+import 'package:rideme_driver/connection_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/driver_license_page.dart';
-import 'package:rideme_driver/features/authentication/presentation/pages/enter_email_page.dart';
+
 import 'package:rideme_driver/features/authentication/presentation/pages/enter_personal_details.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/landing_page.dart';
-import 'package:rideme_driver/features/authentication/presentation/pages/more_info_addition_page.dart';
+
+import 'package:rideme_driver/features/authentication/presentation/pages/no_internet_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/otp_verification_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/phone_entry_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/photo_check.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/pledge_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/vehicle_document_page.dart';
+import 'package:rideme_driver/features/home/presentation/pages/home_page.dart';
 
 final GoRouter goRouterConfiguration = GoRouter(
   initialLocation: '/',
   routes: [
     //ROOT
     GoRoute(
-        name: 'root',
-        path: '/',
-        builder: (context, state) => const PledgePage()),
+      name: 'root',
+      path: '/',
+      builder: (context, state) => const ConnectionPage(),
+    ),
+
+    //NO INTERNET
+    GoRoute(
+      name: 'noInternet',
+      path: '/no-internet',
+      builder: (context, state) => const NoInternetPage(),
+    ),
 
     //LANDING PAGE
     GoRoute(
@@ -47,22 +58,55 @@ final GoRouter goRouterConfiguration = GoRouter(
 
         //COMPLETE SIGN UP
         GoRoute(
-            name: 'additionalInfo',
-            path: 'additional-info',
-            builder: (context, state) => EnterEmailPage(
-                  token: state.uri.queryParameters['token'] ?? '',
-                ),
-            routes: [
-              GoRoute(
-                name: 'moreAdditionalInfo',
-                path: 'more-additional-info',
-                builder: (context, state) => MoreInfoAdditionPage(
-                  token: state.uri.queryParameters['token'] ?? '',
-                  email: state.uri.queryParameters['email'] ?? '',
-                ),
-              )
-            ])
+          name: 'signup',
+          path: 'signup',
+          builder: (context, state) => EnterPersonalDetailsPage(
+            token: state.uri.queryParameters['token'] ?? '',
+          ),
+        )
       ],
     ),
+
+    //LICENSE
+
+    GoRoute(
+      name: 'licenseInformation',
+      path: '/license-information',
+      builder: (context, state) => LicenseInformationPage(
+        from: state.uri.queryParameters['from'],
+      ),
+    ),
+
+    //VEHICLE
+    GoRoute(
+      name: 'vehicleInformation',
+      path: '/vehicle-information',
+      builder: (context, state) => VehicleDocumentPage(
+        from: state.uri.queryParameters['from'],
+      ),
+    ),
+
+    //PHOTO CHECK
+    GoRoute(
+      name: 'photoCheck',
+      path: '/photo-check',
+      builder: (context, state) => PhotoCheckPage(
+        from: state.uri.queryParameters['from'],
+      ),
+    ),
+
+    //PLEDGE
+    GoRoute(
+      name: 'pledge',
+      path: '/pledge',
+      builder: (context, state) => const PledgePage(),
+    ),
+
+    //HOME
+    GoRoute(
+      name: 'home',
+      path: '/home',
+      builder: (context, state) => const HomePage(),
+    )
   ],
 );

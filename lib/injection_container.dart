@@ -5,11 +5,22 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
 import 'package:rideme_driver/core/urls/urls.dart';
+import 'package:rideme_driver/features/authentication/data/datasources/localds.dart';
+import 'package:rideme_driver/features/authentication/data/datasources/remoteds.dart';
+import 'package:rideme_driver/features/authentication/data/repository/authentication_repo_impl.dart';
+import 'package:rideme_driver/features/authentication/domain/repository/authentication_repository.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/get_refresh_token.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/init_auth.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/logout.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/recover_token.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/sign_up.dart';
+import 'package:rideme_driver/features/authentication/domain/usecases/verify_otp.dart';
+import 'package:rideme_driver/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:rideme_driver/features/informationResources/data/datasource/remoteds.dart';
 import 'package:rideme_driver/features/informationResources/data/repository/information_resource_repo_impl.dart';
 import 'package:rideme_driver/features/informationResources/domain/repository/information_resources_repository.dart';
+import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_colors.dart';
 import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_makes.dart';
-import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_models.dart';
 import 'package:rideme_driver/features/informationResources/presentation/bloc/information_resources_bloc.dart';
 import 'package:rideme_driver/features/localization/data/datasources/localds.dart';
 import 'package:rideme_driver/features/localization/data/repository/repo_impl.dart';
@@ -75,6 +86,9 @@ init() async {
   //user
   initUser();
 
+  //auth
+  initAuth();
+
   //data
 
   initData();
@@ -127,6 +141,84 @@ init() async {
 
     return socket;
   });
+}
+
+//!INIT AUTHENTICATION
+
+initAuth() {
+  //bloc
+  sl.registerFactory(
+    () => AuthenticationBloc(
+      getRefreshToken: sl(),
+      recoverToken: sl(),
+      signUp: sl(),
+      logOut: sl(),
+      initAuth: sl(),
+      verifyOtp: sl(),
+    ),
+  );
+
+  //usecases
+
+  sl.registerLazySingleton(
+    () => InitAuth(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => VerifyOtp(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => SignUp(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetRefreshToken(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => RecoverToken(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => LogOut(
+      repository: sl(),
+    ),
+  );
+
+  //repository
+
+  sl.registerLazySingleton<AuthenticationRepository>(
+    () => AuthenticationRepositoryImpl(
+      remoteDatasource: sl(),
+      localDatasource: sl(),
+      userLocalDatasource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  //datasources
+
+  sl.registerLazySingleton<AuthenticationRemoteDatasource>(
+    () => AuthenticationRemoteDatasourceImpl(
+      client: sl(),
+      urls: sl(),
+      messaging: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<AuthenticationLocalDatasource>(
+    () => AuthenticationLocalDatasourceImpl(
+      secureStorage: sl(),
+    ),
+  );
 }
 
 //!INIT PERMISSIONS
@@ -223,7 +315,7 @@ initData() {
   sl.registerFactory(
     () => InformationResourcesBloc(
       getAllVehicleMakes: sl(),
-      getAllVehicleModels: sl(),
+      getAllVehicleColors: sl(),
     ),
   );
 
@@ -235,7 +327,7 @@ initData() {
     ),
   );
   sl.registerLazySingleton(
-    () => GetAllVehicleModels(
+    () => GetAllVehicleColors(
       repository: sl(),
     ),
   );

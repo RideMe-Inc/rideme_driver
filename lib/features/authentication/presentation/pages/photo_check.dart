@@ -2,13 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/extensions/context_extensions.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
 import 'package:rideme_driver/core/widgets/buttons/generic_button_widget.dart';
+import 'package:rideme_driver/core/widgets/loaders/loading_indicator.dart';
 import 'package:rideme_driver/core/widgets/popups/error_popup.dart';
+import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
 import 'package:rideme_driver/features/media/presentation/bloc/media_bloc.dart';
+import 'package:rideme_driver/features/user/presentation/bloc/user_bloc.dart';
 import 'package:rideme_driver/injection_container.dart';
 
 class PhotoCheckPage extends StatefulWidget {
@@ -21,6 +25,7 @@ class PhotoCheckPage extends StatefulWidget {
 
 class _PhotoCheckPageState extends State<PhotoCheckPage> {
   final mediaBloc = sl<MediaBloc>();
+  final userBloc = sl<UserBloc>();
   File? photoCheckImage;
   String? imageBase64;
 
@@ -29,39 +34,69 @@ class _PhotoCheckPageState extends State<PhotoCheckPage> {
     mediaBloc.add(const TakePictureWithCameraEvent());
   }
 
+  updatePhotoCheck() {
+    final params = {
+      "locale": context.appLocalizations.localeName,
+      "bearer": context.read<AuthenticationProvider>().token,
+      "body": {
+        "profile_image": imageBase64,
+      }
+    };
+
+    userBloc.add(EditProfileEvent(params: params));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: BlocListener(
-        bloc: mediaBloc,
-        listener: (context, state) {
-          //error
-          if (state is ImageSelectionError) {
-            showErrorPopUp(state.errorMessage, context);
-          }
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener(
+            bloc: mediaBloc,
+            listener: (context, state) {
+              //error
+              if (state is ImageSelectionError) {
+                showErrorPopUp(state.errorMessage, context);
+              }
 
-          //error
-          if (state is ConvertImageToBase64Error) {
-            showErrorPopUp(state.errorMessage, context);
-          }
-          //set image
-          if (state is ImageSelectionLoaded) {
-            photoCheckImage = state.image;
-            mediaBloc.add(
-              ConvertImageToBase64Event(image: state.image),
-            );
+              //error
+              if (state is ConvertImageToBase64Error) {
+                showErrorPopUp(state.errorMessage, context);
+              }
+              //set image
+              if (state is ImageSelectionLoaded) {
+                photoCheckImage = state.image;
+                mediaBloc.add(
+                  ConvertImageToBase64Event(image: state.image),
+                );
 
-            setState(() {});
-          }
+                setState(() {});
+              }
 
-          //set base64
-          if (state is ConvertImageToBase64Loaded) {
-            imageBase64 = state.base64Image;
+              //set base64
+              if (state is ConvertImageToBase64Loaded) {
+                imageBase64 = state.base64Image;
 
-            setState(() {});
-          }
-        },
+                setState(() {});
+              }
+            },
+          ),
+          BlocListener(
+            bloc: userBloc,
+            listener: (context, state) {
+              if (state is EditProfileLoaded) {
+                widget.from != null
+                    ? context.goNamed('home')
+                    : context.goNamed('pledge');
+              }
+
+              if (state is EditProfileError) {
+                showErrorPopUp(state.message, context);
+              }
+            },
+          ),
+        ],
         child: Padding(
           padding: EdgeInsets.all(Sizes.height(context, 0.02)),
           child: Column(
@@ -110,10 +145,18 @@ class _PhotoCheckPageState extends State<PhotoCheckPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      GenericButton(
-                        onTap: () {},
-                        label: context.appLocalizations.continues,
-                        isActive: imageBase64 != null,
+                      BlocBuilder(
+                        bloc: userBloc,
+                        builder: (context, state) {
+                          if (state is EditProfileLoading) {
+                            return const LoadingIndicator();
+                          }
+                          return GenericButton(
+                            onTap: updatePhotoCheck,
+                            label: context.appLocalizations.continues,
+                            isActive: imageBase64 != null,
+                          );
+                        },
                       ),
                     ],
                   ),

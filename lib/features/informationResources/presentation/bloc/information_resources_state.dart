@@ -11,16 +11,16 @@ final class InformationResourcesInitial extends InformationResourcesState {}
 
 //!COMPANIES
 //loaded
-final class GetAllVehicleModelsLoaded extends InformationResourcesState {
-  final List<InformationResource> models;
+final class GetAllVehicleColorsLoaded extends InformationResourcesState {
+  final List<InformationResource> colors;
 
-  const GetAllVehicleModelsLoaded({required this.models});
+  const GetAllVehicleColorsLoaded({required this.colors});
 }
 
 //!Vehicle brands
 //loaded
 final class GetAllVehicleMakesLoaded extends InformationResourcesState {
-  final List<InformationResource> makes;
+  final List<VehicleMakes> makes;
 
   const GetAllVehicleMakesLoaded({required this.makes});
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/extensions/context_extensions.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
@@ -95,6 +96,7 @@ class _PledgePageState extends State<PledgePage> {
                 style: context.textTheme.displayMedium
                     ?.copyWith(color: AppColors.rideMeGreyDarker),
               ),
+              Space.height(context, 0.2),
             ],
           ),
         ),
@@ -107,7 +109,7 @@ class _PledgePageState extends State<PledgePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             GenericButton(
-              onTap: () {},
+              onTap: () => context.goNamed('home'),
               label: context.appLocalizations.iAccept,
               isActive: true,
             ),

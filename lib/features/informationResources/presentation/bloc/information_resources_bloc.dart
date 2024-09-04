@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rideme_driver/features/informationResources/domain/entity/information_resource.dart';
+import 'package:rideme_driver/features/informationResources/domain/entity/vehicle_makes.dart';
+import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_colors.dart';
 import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_makes.dart';
-
-import 'package:rideme_driver/features/informationResources/domain/usecases/get_all_vehicle_models.dart';
 
 part 'information_resources_event.dart';
 part 'information_resources_state.dart';
@@ -11,10 +11,11 @@ part 'information_resources_state.dart';
 class InformationResourcesBloc
     extends Bloc<InformationResourcesEvent, InformationResourcesState> {
   final GetAllVehicleMakes getAllVehicleMakes;
-  final GetAllVehicleModels getAllVehicleModels;
+  final GetAllVehicleColors getAllVehicleColors;
+
   InformationResourcesBloc({
     required this.getAllVehicleMakes,
-    required this.getAllVehicleModels,
+    required this.getAllVehicleColors,
   }) : super(InformationResourcesInitial()) {
     //! GET COMPANIES
     on<GetAllVehiclesMakesEvent>(
@@ -29,16 +30,15 @@ class InformationResourcesBloc
         );
       },
     );
-
-    //! GET ALL VEHICLE BRANDS
-    on<GetAllVehiclesModelsEvent>(
+    //! GET colors
+    on<GetAllVehicleColorsEvent>(
       (event, emit) async {
-        final response = await getAllVehicleModels(event.params);
+        final response = await getAllVehicleColors(event.params);
 
         emit(
           response.fold(
             (errorMessage) => GenericDataError(errorMessage: errorMessage),
-            (response) => GetAllVehicleModelsLoaded(models: response),
+            (response) => GetAllVehicleColorsLoaded(colors: response),
           ),
         );
       },

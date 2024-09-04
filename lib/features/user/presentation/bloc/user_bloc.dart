@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/usecase/usecase.dart';
 import 'package:rideme_driver/features/user/domain/entities/license_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/profile_info.dart';
@@ -256,5 +258,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         ),
       );
     });
+  }
+
+  //login right navigation
+  navigateRiderBasedOnProfileCompletion(User? driver, BuildContext context) {
+    if (driver == null) {
+      context.goNamed('signup');
+      return;
+    }
+    if ((driver.hasLicense ?? false) &&
+        (driver.hasVehicle ?? false) &&
+        (driver.photoCheckRequired ?? true) != true) {
+      context.goNamed('home');
+    } else if (!(driver.hasVehicle ?? false)) {
+      context.goNamed('vehicleInformation');
+    } else if (!(driver.hasLicense ?? false)) {
+      context.goNamed('licenseInformation');
+    } else if (driver.photoCheckRequired ?? false) {
+      context.goNamed('photoCheck');
+    } else {
+      context.goNamed('signup');
+    }
   }
 }

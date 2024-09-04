@@ -13,4 +13,5 @@ class ImageNameConstants {
   static const policeIMG = '$_baseUrl/police.png';
   static const fireServiceIMG = '$_baseUrl/fire_service.png';
   static const mapIndicatorIMG = '$_baseUrl/map_indicator.png';
+  static const ridemeLogoIMG = '$_baseUrl/rideme_logo.png';
 }

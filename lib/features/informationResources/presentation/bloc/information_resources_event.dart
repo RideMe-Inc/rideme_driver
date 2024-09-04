@@ -14,9 +14,9 @@ final class GetAllVehiclesMakesEvent extends InformationResourcesEvent {
   const GetAllVehiclesMakesEvent({required this.params});
 }
 
-//! GET ALL VEHICLE MODELS
-final class GetAllVehiclesModelsEvent extends InformationResourcesEvent {
+//!GET VEHICL COLORS
+final class GetAllVehicleColorsEvent extends InformationResourcesEvent {
   final Map<String, dynamic> params;
 
-  const GetAllVehiclesModelsEvent({required this.params});
+  const GetAllVehicleColorsEvent({required this.params});
 }

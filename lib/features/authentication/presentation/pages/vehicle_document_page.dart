@@ -20,6 +20,7 @@ import 'package:rideme_driver/core/widgets/textfield/text_form_field.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
 import 'package:rideme_driver/features/authentication/presentation/widgets/information_upload_widget.dart';
 import 'package:rideme_driver/features/informationResources/domain/entity/information_resource.dart';
+import 'package:rideme_driver/features/informationResources/domain/entity/vehicle_makes.dart';
 import 'package:rideme_driver/features/informationResources/presentation/bloc/information_resources_bloc.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
 import 'package:rideme_driver/features/media/presentation/bloc/media_bloc.dart';
@@ -53,8 +54,9 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
   final informationResourcesBloc = sl<InformationResourcesBloc>();
   final informationResourcesBloc2 = sl<InformationResourcesBloc>();
 
-  List<InformationResource> vehicleMakes = [];
-  List<InformationResource> vehicleModels = [];
+  List<VehicleMakes> vehicleMakes = [];
+  List<VehicleMakes> vehicleModels = [];
+  List<InformationResource> vehicleColors = [];
 
   File? vehicleInsuranceImage;
   String? vehichleInsuranceBase64, vehicleType, viExpiry;
@@ -69,15 +71,12 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
   ];
 
   final formKey = GlobalKey<FormBuilderState>();
-
-  //get all vehicle brands event function
-  getAllVehicleModels(Map<String, dynamic> params) {
-    informationResourcesBloc2.add(GetAllVehiclesModelsEvent(params: params));
-  }
+  VehicleMakes? vehicleMake;
 
   //get all vehicle brands event function
   getAllVehicleMakes(Map<String, dynamic> params) {
     informationResourcesBloc.add(GetAllVehiclesMakesEvent(params: params));
+    informationResourcesBloc2.add(GetAllVehicleColorsEvent(params: params));
   }
 
   getVehicles() {
@@ -140,11 +139,12 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
       'body': {
         'registration_number': registrationNumber.text,
         'insurance_issuer': insuranceName.text,
+        'insurance_number': insuranceNumber.text,
         'date_of_expiry': viExpiry,
         'vehicle_type': vehicleType?.replaceAll(' ', '').toLowerCase() ?? 'ice',
-        'vehicle_makes_id': makeId,
         'vehicle_model_id': modelId,
-        'insurance_image': vehichleInsuranceBase64,
+        'proof_of_insurance': vehichleInsuranceBase64,
+        'vehicle_color': vehicleColor.text,
       }
     };
 
@@ -213,8 +213,12 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                 showErrorPopUp(state.errorMessage, context);
               }
 
+              if (state is GenericVehicleError) {
+                showErrorPopUp(state.errorMessage, context);
+              }
+
               if (state is CreateVehicleLoaded) {
-                context.goNamed('welcome');
+                context.goNamed('licenseInformation');
               }
 
               if (state is EditVehicleLoaded) {
@@ -248,7 +252,6 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
               }
             },
           ),
-
           //!INFO RESO 2
           BlocListener(
             bloc: informationResourcesBloc2,
@@ -259,10 +262,9 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
               }
 
               //GET ALL VEHICLE BRANDS SUCCESS
-              if (state is GetAllVehicleModelsLoaded) {
+              if (state is GetAllVehicleColorsLoaded) {
                 setState(() {
-                  vehicleModels = state.models;
-                  modelEnabled = true;
+                  vehicleColors = state.colors;
                 });
               }
             },
@@ -401,7 +403,7 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                   ),
 
                   //VEHICLE BRAND
-                  FormBuilderField<InformationResource>(
+                  FormBuilderField<VehicleMakes>(
                     name: 'vehicle_brand',
                     validator: (value) {
                       if (value == null) {
@@ -409,8 +411,8 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                       }
                       return null;
                     },
-                    builder: (field) => Autocomplete<InformationResource>(
-                      displayStringForOption: (option) => option.name ?? '',
+                    builder: (field) => Autocomplete<VehicleMakes>(
+                      displayStringForOption: (option) => option.name,
                       fieldViewBuilder: (context, controller, focus, callback) {
                         return // vehicle brand
                             GenericTextField(
@@ -419,11 +421,9 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                           errorText: field.errorText,
                           onChanged: (value) {
                             final index = vehicleMakes.indexWhere(
-                              (element) =>
-                                  element.name?.toLowerCase().contains(
-                                        value.toLowerCase(),
-                                      ) ??
-                                  false,
+                              (element) => element.name.toLowerCase().contains(
+                                    value.toLowerCase(),
+                                  ),
                             );
 
                             if (index != -1) {
@@ -452,7 +452,7 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                                   return InkWell(
                                     onTap: () => selection(brand),
                                     child: ListTile(
-                                      title: Text(brand.name ?? ''),
+                                      title: Text(brand.name),
                                     ),
                                   );
                                 },
@@ -465,14 +465,15 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                       //!
                       onSelected: (value) {
                         field.didChange(value);
-                        setState(() {
-                          makeId = value.id;
-                        });
 
-                        getAllVehicleModels({
-                          "locale": "en",
-                          "urlParameters": {
-                            "id": makeId.toString(),
+                        setState(() {
+                          if (value.models != null) {
+                            vehicleModels.retainWhere(
+                              (element) => element == vehicleMake,
+                            );
+                            vehicleModels.addAll(value.models!);
+                          } else {
+                            vehicleModels.add(value);
                           }
                         });
                       },
@@ -481,11 +482,9 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
                           return [];
                         }
                         return vehicleMakes.where(
-                          (vehicle) =>
-                              vehicle.name
-                                  ?.toLowerCase()
-                                  .contains(value.text.toLowerCase()) ??
-                              false,
+                          (vehicle) => vehicle.name
+                              .toLowerCase()
+                              .contains(value.text.toLowerCase()),
                         );
                       },
                     ),
@@ -493,108 +492,64 @@ class _VehicleDocumentPageState extends State<VehicleDocumentPage>
 
                   //VEHICLE MODEL
 
-                  FormBuilderField<InformationResource>(
-                    name: 'vehicle_model',
+                  DropdownFormBuilderField(
+                    fieldName: 'vehicle_model',
+                    hint: context.appLocalizations.vehicleModel,
+                    label: context.appLocalizations.vehicleModelHint,
+                    onChanged: (p0) {
+                      if (p0 != null) {
+                        setState(() {
+                          modelId = p0.id.toInt();
+                          vehicleMake = p0;
+                        });
+                      }
+                    },
+                    items: vehicleModels
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name),
+                          ),
+                        )
+                        .toList(),
                     validator: (value) {
                       if (value == null) {
-                        return 'Please choose a model';
-                      }
-                      return null;
-                    },
-                    builder: (field) => Autocomplete<InformationResource>(
-                      displayStringForOption: (option) => option.name ?? '',
-                      fieldViewBuilder: (context, controller, focus, callback) {
-                        return // vehicle brand
-                            GenericTextField(
-                          focus: focus,
-                          label: context.appLocalizations.vehicleModel,
-                          errorText: field.errorText,
-                          onChanged: (value) {
-                            final index = vehicleModels.indexWhere(
-                              (element) =>
-                                  element.name?.toLowerCase().contains(
-                                        value.toLowerCase(),
-                                      ) ??
-                                  false,
-                            );
-
-                            if (index != -1) {
-                              field.didChange(vehicleModels[index]);
-                            }
-                          },
-                          hint: context.appLocalizations.vehicleModelHint,
-                          controller: controller,
-                        );
-                      },
-                      optionsViewBuilder: (context, selection, models) {
-                        return Container(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            color: context.theme.scaffoldBackgroundColor,
-                            elevation: 3.0,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: SizedBox(
-                              width: Sizes.width(context, 0.9),
-                              height: Sizes.height(context, 0.15),
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(0),
-                                itemCount: models.length,
-                                itemBuilder: (context, i) {
-                                  final model = models.elementAt(i);
-                                  return InkWell(
-                                    onTap: () => selection(model),
-                                    child: ListTile(
-                                      title: Text(model.name ?? ''),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-
-                      //!
-                      onSelected: (value) {
-                        field.didChange(value);
-                        setState(() {
-                          modelId = value.id;
-                        });
-                      },
-                      optionsBuilder: (value) {
-                        if (value.text.isEmpty) {
-                          return [];
-                        }
-                        return vehicleModels.where(
-                          (vehicle) =>
-                              vehicle.name
-                                  ?.toLowerCase()
-                                  .contains(value.text.toLowerCase()) ??
-                              false,
-                        );
-                      },
-                    ),
-                  ),
-
-                  TextFormBuilderField(
-                    name: 'vehicle-color',
-                    label: context.appLocalizations.vehicleColor,
-                    onChanged: (p0) {},
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
                         return context.appLocalizations.fieldIsRequired;
                       }
-
                       return null;
                     },
-                    hint: context.appLocalizations.vehicleColorHint,
-                    controller: vehicleColor,
-                    suffixOnTap: () {},
+                  ),
+
+                  //vehicle color
+
+                  DropdownFormBuilderField(
+                    fieldName: 'vehicle-color',
+                    hint: context.appLocalizations.vehicleColor,
+                    label: context.appLocalizations.vehicleColorHint,
+                    onChanged: (p0) {
+                      if (p0 != null) {
+                        setState(() {
+                          vehicleColor.text = p0.name ?? 'white';
+                        });
+                      }
+                    },
+                    items: vehicleColors
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name ?? ''),
+                          ),
+                        )
+                        .toList(),
+                    validator: (value) {
+                      if (value == null) {
+                        return context.appLocalizations.fieldIsRequired;
+                      }
+                      return null;
+                    },
                   ),
 
                   Space.height(context, 0.07),
-
-                  //TODO: REVIEW THIS
 
                   BlocBuilder(
                     bloc: userBloc,
