@@ -470,7 +470,9 @@
 "delayMinutes":"Minutes de retard",
 "paymentDetails":"Détails de paiement",
 "amountAndCurrency":"$ {amount}",
-"initialAmount":"Montant initial"
+"initialAmount":"Montant initial",
+"userDetails":"Détails de l'utilisateur",
+"update":"Mise à jour"
 
 
 }
