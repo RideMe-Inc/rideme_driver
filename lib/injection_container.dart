@@ -42,6 +42,15 @@ import 'package:rideme_driver/features/permissions/domain/usecases/request_all_n
 import 'package:rideme_driver/features/permissions/domain/usecases/request_location_permission.dart';
 import 'package:rideme_driver/features/permissions/domain/usecases/request_notif_permission.dart';
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
+import 'package:rideme_driver/features/trips/data/datasource/remoteds.dart';
+import 'package:rideme_driver/features/trips/data/repository/trip_repository_impl.dart';
+import 'package:rideme_driver/features/trips/domain/repository/trips_repository.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
+import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:rideme_driver/features/user/data/datasources/localds.dart';
 import 'package:rideme_driver/features/user/data/datasources/remoteds.dart';
 import 'package:rideme_driver/features/user/data/repositories/user_repository_impl.dart';
@@ -88,6 +97,10 @@ init() async {
 
   //auth
   initAuth();
+
+  //trips
+
+  initTrips();
 
   //data
 
@@ -511,6 +524,69 @@ initUser() {
   sl.registerLazySingleton<UserLocalDatasource>(
     () => UserLocalDatasourceImpl(
       sharedPreferences: sl(),
+    ),
+  );
+}
+
+//!INIT TRIPS
+initTrips() {
+  //bloc
+  sl.registerFactory(
+    () => TripsBloc(
+      cancelTrip: sl(),
+      getAllTrips: sl(),
+      rateTrip: sl(),
+      getTripInfo: sl(),
+      reportTrip: sl(),
+    ),
+  );
+
+  //usecases
+
+  sl.registerLazySingleton(
+    () => CancelTrip(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetAllTrips(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => RateTrip(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetTripInfo(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ReportTrip(
+      repository: sl(),
+    ),
+  );
+
+  //repository
+  sl.registerLazySingleton<TripsRepository>(
+    () => TripsRepositoryImpl(
+      networkInfo: sl(),
+      tripRemoteDataSource: sl(),
+    ),
+  );
+
+  //datasources
+  sl.registerLazySingleton<TripRemoteDataSource>(
+    () => TripRemoteDataSourceImpl(
+      urls: sl(),
+      client: sl(),
+      socket: sl(),
     ),
   );
 }

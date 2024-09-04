@@ -12,6 +12,7 @@ import 'package:rideme_driver/assets/svgs/svg_name_constants.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
+import 'package:rideme_driver/features/home/presentation/pages/home_drawer.dart';
 
 import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/home/presentation/widgets/home_profile_widget.dart';
@@ -82,8 +83,7 @@ class _HomePageState extends State<HomePage> {
     homeProvider = context.watch<HomeProvider>();
 
     return Scaffold(
-      // drawer: const HomeDrawer(),
-
+      drawer: const HomeDrawer(),
       body: BlocListener(
         bloc: permissionBloc,
         listener: (context, state) {
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                 child: Builder(builder: (context) {
                   return GestureDetector(
                     onTap: () {
-                      // Scaffold.of(context).openDrawer();
+                      Scaffold.of(context).openDrawer();
                     },
                     child: Stack(
                       alignment: Alignment.topCenter,

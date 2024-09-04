@@ -16,7 +16,10 @@ class SvgNameConstants {
   static const historySVG = '$_baseUrl/history.svg';
   static const inRideSafetySVG = '$_baseUrl/in_ride_safety.svg';
   static const logoutSVG = '$_baseUrl/logout.svg';
+  static const earningsSVG = '$_baseUrl/earnings.svg';
   static const notificationSVG = '$_baseUrl/notification.svg';
+  static const dropOffPointActiveSVG = '$_baseUrl/start_point.svg';
+
   static const paymentSVG = '$_baseUrl/payment.svg';
   static const personsSVG = '$_baseUrl/persons.svg';
   static const phoneSVG = '$_baseUrl/phone.svg';
@@ -34,4 +37,5 @@ class SvgNameConstants {
   static const clockSVG = '$_baseUrl/clock.svg';
   static const searchSVG = '$_baseUrl/search.svg';
   static const googleLogoSVG = '$_baseUrl/google_watermark.svg';
+  static const alertCircle = '$_baseUrl/alert_circle.svg';
 }

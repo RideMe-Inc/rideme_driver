@@ -19,6 +19,13 @@ enum Endpoints {
   photoCheck(value: '/photo-check'),
   getSupportContacts(value: '/configs/support-contact'),
 
+  //!TRIPS
+  trip(value: '/trips'),
+  bookTrip(value: '/trips/:id/book'),
+  tripDetails(value: '/trips/:id'),
+  reportTrip(value: '/trips/:id/reports'),
+  rateTrip(value: '/trips/:id/ratings'),
+
   //! LOCATION
   myLocation(value: '/geo-data'),
 

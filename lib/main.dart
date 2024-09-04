@@ -9,6 +9,7 @@ import 'package:rideme_driver/core/theme/app_theme.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
 import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
+import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
 import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
 import 'package:rideme_driver/firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -48,6 +49,9 @@ main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => HomeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TripProvider(),
         ),
       ],
       child: Consumer<LocaleProvider>(

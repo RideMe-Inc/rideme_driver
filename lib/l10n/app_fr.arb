@@ -442,8 +442,35 @@
 "signUp":"Inscrivez-vous",
 "cashout":"Retirer ${amount}",
 "pickUpCustomer":"Ramassage de {name}",
-"enterPersonalDetailsInfo":"Entrez vos informations personnelles pour nous aider à mieux vous connaître."
+"enterPersonalDetailsInfo":"Entrez vos informations personnelles pour nous aider à mieux vous connaître.",
 
+
+
+"note_3": "Vous disposez de 90 jours pour activer votre compte si vous décidez de rejoindre la plateforme à l'avenir. Vous devrez créer un nouveau compte si votre absence dépasse les jours prévus.",
+"note_1": "La suppression de votre compte entraînera la perte de l'accès à votre compte, y compris l'historique des commandes, les adresses enregistrées, les modes de paiement et tout autre paramètre personnalisé.",
+"note_2": "Une fois le compte supprimé, vos données ne peuvent pas être récupérées. Cela inclut toutes les commandes passées, les détails des transactions, les préférences et autres informations relatives au compte.",
+
+
+"deleteAccountHeader": "Êtes-vous sûr de vouloir supprimer votre compte?",
+
+"accountAssociatedContinuation": "serait supprimé de RideMe",
+"acountAssociatedWith": "Le compte associé à",
+"pleaseTakeNote": "Prenez des notes s'il vous plaît:",
+
+
+"confirmDeleteConfirmation": "Oui, supprimer mon compte",
+"confirmDelete": "Confirmer la suppression du compte",
+"confirmDeleteDesc": "Triste de vous voir partir. Contactez le support si vous avez un problème.",
+"logoutDesc": "Etes-vous sûr de vouloir vous déconnecter?",
+"tripCancelInfo":"Veuillez sélectionner la raison de l'annulation de votre trajet",
+
+
+
+"tripDistance":"Distance du trajet",
+"delayMinutes":"Minutes de retard",
+"paymentDetails":"Détails de paiement",
+"amountAndCurrency":"$ {amount}",
+"initialAmount":"Montant initial"
 
 
 }

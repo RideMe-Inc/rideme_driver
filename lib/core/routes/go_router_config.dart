@@ -12,6 +12,10 @@ import 'package:rideme_driver/features/authentication/presentation/pages/photo_c
 import 'package:rideme_driver/features/authentication/presentation/pages/pledge_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/vehicle_document_page.dart';
 import 'package:rideme_driver/features/home/presentation/pages/home_page.dart';
+import 'package:rideme_driver/features/trips/presentation/pages/trip_history.dart';
+import 'package:rideme_driver/features/trips/presentation/pages/trip_history_details_page.dart';
+import 'package:rideme_driver/features/user/presentation/pages/delete_account_page.dart';
+import 'package:rideme_driver/features/user/presentation/pages/safety_page.dart';
 
 final GoRouter goRouterConfiguration = GoRouter(
   initialLocation: '/',
@@ -104,9 +108,39 @@ final GoRouter goRouterConfiguration = GoRouter(
 
     //HOME
     GoRoute(
-      name: 'home',
-      path: '/home',
-      builder: (context, state) => const HomePage(),
-    )
+        name: 'home',
+        path: '/home',
+        builder: (context, state) => const HomePage(),
+        routes: [
+          //deleteAccount
+          GoRoute(
+            name: 'deleteAccount',
+            path: 'delete-account',
+            builder: (context, state) => const DeleteAccountPage(),
+          ),
+
+          //safety
+          GoRoute(
+            name: 'safety',
+            path: 'safety',
+            builder: (context, state) => const SafetyPage(),
+          ),
+
+          //history
+
+          GoRoute(
+            name: 'trips',
+            path: 'trips',
+            builder: (context, state) => const TripHistoryPage(),
+            routes: [
+              GoRoute(
+                name: 'historyDetails',
+                path: 'history-details',
+                builder: (context, state) => TripHistoryDetailsPage(
+                    tripId: state.uri.queryParameters['tripId'] ?? ''),
+              )
+            ],
+          ),
+        ])
   ],
 );
