@@ -8,6 +8,7 @@ class User extends Equatable {
       phone,
       email,
       profileUrl,
+      address,
       status,
       availability;
 
@@ -21,6 +22,7 @@ class User extends Equatable {
     required this.phone,
     required this.email,
     required this.profileUrl,
+    required this.address,
     required this.status,
     required this.requestedDeletion,
     required this.ongoingTrip,
@@ -42,6 +44,7 @@ class User extends Equatable {
         "photo_check_required": photoCheckRequired,
         "profile_url": profileUrl,
         "status": status,
+        "address": address,
         "requested_deletion": requestedDeletion,
         "availability": availability,
         "ongoing_trip": ongoingTrip?.toMap(),
@@ -60,6 +63,7 @@ class User extends Equatable {
         requestedDeletion,
         ongoingTrip,
         hasLicense,
+        address,
         hasVehicle,
         photoCheckRequired,
         availability,

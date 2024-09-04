@@ -15,6 +15,7 @@ import 'package:rideme_driver/features/home/presentation/pages/home_page.dart';
 import 'package:rideme_driver/features/trips/presentation/pages/trip_history.dart';
 import 'package:rideme_driver/features/trips/presentation/pages/trip_history_details_page.dart';
 import 'package:rideme_driver/features/user/presentation/pages/delete_account_page.dart';
+import 'package:rideme_driver/features/user/presentation/pages/edit_profile.dart';
 import 'package:rideme_driver/features/user/presentation/pages/safety_page.dart';
 
 final GoRouter goRouterConfiguration = GoRouter(
@@ -124,6 +125,15 @@ final GoRouter goRouterConfiguration = GoRouter(
             name: 'safety',
             path: 'safety',
             builder: (context, state) => const SafetyPage(),
+          ),
+
+          //profile
+
+          //edit profile
+          GoRoute(
+            name: 'editProfile',
+            path: 'edit',
+            builder: (context, state) => const EditProfilePage(),
           ),
 
           //history

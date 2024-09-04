@@ -16,6 +16,7 @@ class UserModel extends User {
     required super.hasVehicle,
     required super.photoCheckRequired,
     required super.availability,
+    required super.address,
   });
 
   factory UserModel.fromJson(Map<String, dynamic>? json) {
@@ -30,6 +31,7 @@ class UserModel extends User {
       availability: json?['availability'],
       status: json?['status'],
       hasLicense: json?['has_license'],
+      address: json?['address'],
       hasVehicle: json?['has_vehicle'],
       photoCheckRequired: json?['photo_check_required'],
       requestedDeletion: json?['requested_deletion'],
