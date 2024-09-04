@@ -1,14 +1,22 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:rideme_driver/core/extensions/context_extensions.dart';
 import 'package:rideme_driver/core/mixins/url_launcher_mixin.dart';
+import 'package:rideme_driver/core/notifications/notif_handler.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
 import 'package:rideme_driver/core/widgets/buttons/generic_button_widget.dart';
-
+import 'package:rideme_driver/core/widgets/loaders/loading_indicator.dart';
+import 'package:rideme_driver/core/widgets/popups/error_popup.dart';
 import 'package:rideme_driver/core/widgets/textfield/phone_number_textfield_widget.dart';
+import 'package:rideme_driver/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
+import 'package:rideme_driver/injection_container.dart';
 
 class PhoneEntryPage extends StatefulWidget {
   const PhoneEntryPage({super.key});
@@ -22,6 +30,28 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
   bool isButtonActive = false;
 
   PhoneNumber phoneNumber = PhoneNumber();
+  final authBloc = sl<AuthenticationBloc>();
+
+  initAuth() {
+    final params = {
+      "locale": context.read<LocaleProvider>().locale,
+      "body": {
+        "phone": number,
+      }
+    };
+
+    authBloc.add(InitAuthenticationEvent(params: params));
+  }
+
+  @override
+  void initState() {
+    PushNotificationHandler(
+      context: context,
+      localNotificationsPlugin: FlutterLocalNotificationsPlugin(),
+      messaging: FirebaseMessaging.instance,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +86,32 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
             Space.height(context, 0.028),
 
             //BUTTON
-            GenericButton(
-              onTap: () =>
+            BlocConsumer(
+              bloc: authBloc,
+              listener: (context, state) {
+                if (state is InitAuthenticationLoaded) {
                   context.pushNamed('otpVerification', queryParameters: {
-                "phone": number,
-              }),
-              label: context.appLocalizations.continues,
-              isActive: isButtonActive,
+                    "phone": number,
+                    "token": state.initAuth.authData?.token,
+                    "user_exist":
+                        state.initAuth.userExists?.toString() ?? 'false'
+                  });
+                }
+                if (state is GenericAuthenticationError) {
+                  showErrorPopUp(state.errorMessage, context);
+                }
+              },
+              builder: (context, state) {
+                if (state is InitAuthenticationLoading) {
+                  return const LoadingIndicator();
+                }
+
+                return GenericButton(
+                  onTap: initAuth,
+                  label: context.appLocalizations.continues,
+                  isActive: isButtonActive,
+                );
+              },
             ),
             Space.height(context, 0.036),
 
@@ -76,7 +125,7 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
                     style: context.textTheme.displaySmall?.copyWith(),
                   ),
                   GestureDetector(
-                    onTap: () => launchLink('https://rideme.com'),
+                    onTap: () => launchLink('https://rideme.app'),
                     child: Text(
                       " ${context.appLocalizations.termsOfService}",
                       style: context.textTheme.displaySmall?.copyWith(
@@ -89,7 +138,7 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
                     style: context.textTheme.displaySmall,
                   ),
                   GestureDetector(
-                    onTap: () => launchLink('https://rideme.com'),
+                    onTap: () => launchLink('https://rideme.app'),
                     child: Text(
                       " ${context.appLocalizations.privacyPolicy}",
                       style: context.textTheme.displaySmall?.copyWith(
@@ -102,7 +151,7 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
                     style: context.textTheme.displaySmall,
                   ),
                   GestureDetector(
-                    onTap: () => launchLink('https://rideme.com'),
+                    onTap: () => launchLink('https://rideme.app'),
                     child: Text(
                       " ${context.appLocalizations.conditions}.",
                       style: context.textTheme.displaySmall?.copyWith(
@@ -113,18 +162,6 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> with UrlLauncherMixin {
                 ],
               ),
             ),
-
-            //TODO: TO BE REMOVED
-            Space.height(context, 0.04),
-            SafeArea(
-              child: GestureDetector(
-                onTap: () => context.goNamed('home'),
-                child: Text(
-                  'Home',
-                  style: context.textTheme.displayMedium,
-                ),
-              ),
-            )
           ],
         ),
       ),

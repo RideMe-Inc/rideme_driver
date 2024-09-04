@@ -12,6 +12,11 @@ class UserModel extends User {
     required super.status,
     required super.requestedDeletion,
     required super.ongoingTrip,
+    required super.hasLicense,
+    required super.hasVehicle,
+    required super.photoCheckRequired,
+    required super.availability,
+    required super.address,
   });
 
   factory UserModel.fromJson(Map<String, dynamic>? json) {
@@ -22,8 +27,13 @@ class UserModel extends User {
       lastName: json?['last_name'],
       phone: json?['phone'],
       email: json?['email'],
-      profileUrl: json?['profile_url'],
+      profileUrl: json?['profile_image_url'],
+      availability: json?['availability'],
       status: json?['status'],
+      hasLicense: json?['has_license'],
+      address: json?['address'],
+      hasVehicle: json?['has_vehicle'],
+      photoCheckRequired: json?['photo_check_required'],
       requestedDeletion: json?['requested_deletion'],
       ongoingTrip: json?['ongoing_trip'] != null
           ? UserOngoingTripsModel.fromJson(json!['ongoing_trip'])

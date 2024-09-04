@@ -15,8 +15,8 @@ mixin LocationMixin {
     double? dropOffLng,
   }) {
     return polyline == null
-        ? 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&scale=2&zoom=${zoom ?? 14}&size=${size ?? '400x400'}&key=AIzaSyCcNLZGoUqLsA4jeKVudD6DNSLg0odLg1A'
-        : 'https://maps.googleapis.com/maps/api/staticmap?scale=2&size=720x200&path=weight:5%7Ccolor:0x000112%7Cenc:$polyline&markers=icon:https://res.cloudinary.com/dbuarum93/image/upload/v1709218770/WhatsApp_Image_2024-02-29_at_13.01.04-2-removebg-preview_quguvw.png%7C$lat,$lng&markers=icon:https://res.cloudinary.com/dbuarum93/image/upload/v1709218826/WhatsApp_Image_2024-02-29_at_13.01.04-removebg-preview_yz90ft.png%7C$dropOffLlat,$dropOffLng&style=feature:poi%7Celement:all%7Cvisibility:off&key=AIzaSyCcNLZGoUqLsA4jeKVudD6DNSLg0odLg1A';
+        ? 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&scale=2&zoom=${zoom ?? 14}&size=${size ?? '400x400'}&key=AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ'
+        : 'https://maps.googleapis.com/maps/api/staticmap?scale=2&size=720x200&path=weight:5%7Ccolor:0x000112%7Cenc:$polyline&markers=icon:https://res.cloudinary.com/dbuarum93/image/upload/v1709218770/WhatsApp_Image_2024-02-29_at_13.01.04-2-removebg-preview_quguvw.png%7C$lat,$lng&markers=icon:https://res.cloudinary.com/dbuarum93/image/upload/v1709218826/WhatsApp_Image_2024-02-29_at_13.01.04-removebg-preview_yz90ft.png%7C$dropOffLlat,$dropOffLng&style=feature:poi%7Celement:all%7Cvisibility:off&key=AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ';
   }
 
   //decoded location

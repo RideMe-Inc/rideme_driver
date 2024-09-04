@@ -31,17 +31,13 @@ class ProfileItemListingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final namings = {
-      "faq": 'FAQ',
       "logout": context.appLocalizations.logout,
       "safety": context.appLocalizations.safety,
-      "payment": context.appLocalizations.payment,
+      "earnings": context.appLocalizations.earnings,
       "editProfile": context.appLocalizations.profile,
-      "becomeARider": context.appLocalizations.becomeARider,
       "aboutRideMe": context.appLocalizations.aboutRideMe,
       "deleteAccount": context.appLocalizations.deleteAccount,
-      "contactSupport": context.appLocalizations.contactSupport,
-      "changePassword": context.appLocalizations.changePassword,
-      'notification': context.appLocalizations.notifications,
+      "trips": context.appLocalizations.trips,
     };
 
     final bool isRefer = name == 'refer';

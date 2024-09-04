@@ -4,21 +4,33 @@ enum Endpoints {
 
   //! AUTH
   initAuth(value: '/auth/init'),
-  logOut(value: '/auth/logout'),
-  signIn(value: '/auth/sign-in'),
-  signUp(value: '/auth/sign-up'),
   verifyOTP(value: '/auth/verify-otp'),
   resendOTP(value: '/auth/resend-otp'),
+  signUp(value: '/auth/sign-up'),
+  logOut(value: '/auth/logout'),
   getRefereshToken(value: '/auth/refresh'),
-  recoverPassword(value: '/auth/recovery'),
-  socialLogin(value: '/auth/social-login'),
-  socialSignUp(value: '/auth/social-sign-up'),
-  setNewPassword(value: '/auth/set-password'),
-  resetPassword(value: '/auth/reset-password'),
-  changePassword(value: '/auth/change-password'),
+  profile(value: '/profile'),
+  editLicense(value: '/licenses/:licenseId'),
+
+  licenses(value: '/licenses'),
+  vehicles(value: '/vehicles'),
+  editVehicles(value: '/vehicles/:vehicleId'),
+  availability(value: '/availabilities'),
+  photoCheck(value: '/photo-check'),
+  getSupportContacts(value: '/configs/support-contact'),
+
+  //!TRIPS
+  trip(value: '/trips'),
+  bookTrip(value: '/trips/:id/book'),
+  tripDetails(value: '/trips/:id'),
+  reportTrip(value: '/trips/:id/reports'),
+  rateTrip(value: '/trips/:id/ratings'),
 
   //! LOCATION
-  myLocation(value: '/geo-data');
+  myLocation(value: '/geo-data'),
+
+  vehicleMakes(value: '/data/vehicle-makes'),
+  vehicleColors(value: '/data/vehicle-colors');
 
   final String value;
 

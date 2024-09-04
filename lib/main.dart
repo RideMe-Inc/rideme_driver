@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
+import 'package:rideme_driver/background_services.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
 import 'package:rideme_driver/core/theme/app_theme.dart';
+import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
+import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
+import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
+import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
 import 'package:rideme_driver/firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rideme_driver/injection_container.dart' as di;
@@ -31,11 +36,25 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
+  await initializeService();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => sl<LocaleProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthenticationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TripProvider(),
         ),
       ],
       child: Consumer<LocaleProvider>(

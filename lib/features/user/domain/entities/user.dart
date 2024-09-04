@@ -2,8 +2,15 @@ import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
   final num? id, rating;
-  final bool? requestedDeletion;
-  final String? firstName, lastName, phone, email, profileUrl, status;
+  final bool? requestedDeletion, hasVehicle, hasLicense, photoCheckRequired;
+  final String? firstName,
+      lastName,
+      phone,
+      email,
+      profileUrl,
+      address,
+      status,
+      availability;
 
   final UserOngoingTrips? ongoingTrip;
 
@@ -15,9 +22,14 @@ class User extends Equatable {
     required this.phone,
     required this.email,
     required this.profileUrl,
+    required this.address,
     required this.status,
     required this.requestedDeletion,
     required this.ongoingTrip,
+    required this.hasLicense,
+    required this.hasVehicle,
+    required this.availability,
+    required this.photoCheckRequired,
   });
 
   Map<String, dynamic> toMap() => {
@@ -27,9 +39,14 @@ class User extends Equatable {
         "last_name": lastName,
         "phone": phone,
         "email": email,
+        "has_license": hasLicense,
+        "has_vehicle": hasVehicle,
+        "photo_check_required": photoCheckRequired,
         "profile_url": profileUrl,
         "status": status,
+        "address": address,
         "requested_deletion": requestedDeletion,
+        "availability": availability,
         "ongoing_trip": ongoingTrip?.toMap(),
       };
 
@@ -45,6 +62,11 @@ class User extends Equatable {
         status,
         requestedDeletion,
         ongoingTrip,
+        hasLicense,
+        address,
+        hasVehicle,
+        photoCheckRequired,
+        availability,
       ];
 }
 

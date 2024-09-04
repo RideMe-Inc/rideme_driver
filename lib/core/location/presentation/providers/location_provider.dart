@@ -14,7 +14,7 @@ class LocationProvider extends ChangeNotifier {
     required this.retrieveLocations,
   });
 
-  BitmapDescriptor _customIcon = BitmapDescriptor.defaultMarker;
+  final BitmapDescriptor _customIcon = BitmapDescriptor.defaultMarker;
 
   BitmapDescriptor get customIcon => _customIcon;
 

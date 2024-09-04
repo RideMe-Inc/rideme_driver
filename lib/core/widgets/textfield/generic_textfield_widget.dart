@@ -59,6 +59,8 @@ class GenericTextField extends StatelessWidget {
   /// An optional boolean flag indicating whether to show the suffix icon.
   final bool? showSuffixIcon;
 
+  final bool? filled;
+
   /// A boolean flag indicating whether to focus the textfield automatically.
   final bool autoFocus;
 
@@ -132,6 +134,7 @@ class GenericTextField extends StatelessWidget {
     this.inputFormatters,
     this.textInputAction,
     this.autoFocus = false,
+    this.filled = false,
   });
 
   @override
@@ -146,75 +149,80 @@ class GenericTextField extends StatelessWidget {
         Sizes.height(context, 0.005),
       ),
     );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (label != null)
-          //label
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: Sizes.height(context, 0.008),
+    return Padding(
+      padding: EdgeInsets.only(top: Sizes.height(context, 0.02)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label != null)
+            //label
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: Sizes.height(context, 0.008),
+              ),
+              child: Text(
+                label!,
+                style: context.textTheme.displaySmall?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
-            child: Text(
-              label!,
+
+          //Textfield
+          GestureDetector(
+            onTap: onTap,
+            child: TextField(
+              focusNode: focus,
+              enabled: enabled,
+              autofocus: autoFocus,
+              onChanged: onChanged,
+              controller: controller,
+              maxLines: maxLines ?? 1,
+              maxLength: maxLength,
+              keyboardType: keyboardType,
+              textInputAction: textInputAction,
+              inputFormatters: inputFormatters,
+              onTapOutside: (enabled ?? false)
+                  ? null
+                  : (_) => FocusManager.instance.primaryFocus?.unfocus(),
+              cursorColor: AppColors.rideMeBlackNormalHover,
+              buildCounter: (context,
+                      {required currentLength,
+                      required isFocused,
+                      required maxLength}) =>
+                  null,
               style: context.textTheme.displaySmall?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                color: enabled ?? true ? null : AppColors.rideMeGreyDarkHover,
+              ),
+              decoration: InputDecoration(
+                filled: filled,
+                fillColor: AppColors.rideMeGreyNormal,
+                hintText: hint,
+                hintStyle: context.textTheme.displaySmall?.copyWith(
+                  color: AppColors.rideMeGreyNormalActive,
+                ),
+                errorMaxLines: 2,
+                errorText: errorText,
+                border: outLineBorder,
+                errorBorder: outLineBorder,
+                enabledBorder: outLineBorder,
+                focusedBorder: outLineBorder,
+                disabledBorder: outLineBorder,
+                focusedErrorBorder: outLineBorder,
+                prefixIcon: prefixIcon,
+                suffixIcon: suffixIcon,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: Sizes.height(context, 0.018),
+                  horizontal: Sizes.width(context, 0.02),
+                ),
               ),
             ),
           ),
-
-        //Textfield
-        GestureDetector(
-          onTap: onTap,
-          child: TextField(
-            focusNode: focus,
-            enabled: enabled,
-            autofocus: autoFocus,
-            onChanged: onChanged,
-            controller: controller,
-            maxLines: maxLines ?? 1,
-            maxLength: maxLength,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            inputFormatters: inputFormatters,
-            onTapOutside: (enabled ?? false)
-                ? null
-                : (_) => FocusManager.instance.primaryFocus?.unfocus(),
-            cursorColor: AppColors.rideMeBlackNormalHover,
-            buildCounter: (context,
-                    {required currentLength,
-                    required isFocused,
-                    required maxLength}) =>
-                null,
-            style: context.textTheme.displaySmall?.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            decoration: InputDecoration(
-              filled: false,
-              hintText: hint,
-              hintStyle: context.textTheme.displaySmall?.copyWith(
-                color: AppColors.rideMeGreyNormalActive,
-              ),
-              errorMaxLines: 2,
-              errorText: errorText,
-              border: outLineBorder,
-              errorBorder: outLineBorder,
-              enabledBorder: outLineBorder,
-              focusedBorder: outLineBorder,
-              disabledBorder: outLineBorder,
-              focusedErrorBorder: outLineBorder,
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon,
-              contentPadding: EdgeInsets.symmetric(
-                vertical: Sizes.height(context, 0.018),
-                horizontal: Sizes.width(context, 0.02),
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

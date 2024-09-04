@@ -344,6 +344,156 @@
   "firstNameHint":"Enter your first name",
   "lastNameHInt":"Enter your last name",
 
+  "enterPersonalDetails":"Enter your Personal Details",
+  "enterPersonalDetailsInfo":"Enter your personal details to help us know you better.",
+  "addressLocation":"Address location",
+  "socialSecurityNumber":"Social security number",
+  "vehicleInformation":"Vehicle Information",
+  "vehicleInformationInfo":"Input your vehicle's details here",
+  "registrationNumber":"Registration number",
+  "registrationNumberHint":"Enter vehicle registration number",
+  "insuranceName":"Insurance name",
+  "insuranceNameHint":"Insurance company name",
+  "insuranceNumber":"Insurance number",
+  "insuranceNumberHint":"Enter insurance number",
+  "insurancePicture":"Insurance picture",
+  "takePhoto":"Upload photo",
+  "front":"Front",
+  "back":"Back",
+  "vehicleType":"Vehicle Type",
+  "vehicleTypeHint":"Example: Electric, Hybrid...",
+  "vehicleBrand":"Vehicle brand",
+  "vehicleBrandHint":"What is your vehicle brand",
+  "vehicleModel":"Vehicle model",
+  "vehicleModelHint":"What is your vehicle model",
+  "vehicleColor":"Vehicle color",
+  "vehicleColorHint":"Select color of your vehicle",
+  "driverLicenseInformation":"Driver License Information",
+  "addDriverLicense":"Add your drivers license information",
+  "licenseNumber":"License number",
+  "licenseNumberHint":"Enter license number",
+  "pictureOfLicense":"Picture of license",
+  "photoCheck":"Photo Check",
+  "photoCheckInfo":"Take selfie when ready",
+  "uploadPassportSizedPicture":"Upload passport sized picture",
+  "pledgeOfGoodBehaviour":"Pledge of good behaviour",
+  "pledgeIntro":"As a driver of RideMe, I pledge to:",
+  "ensureSafety":"Ensure Safety",
+  "ensureSafety1":"Prioritize the safety of passengers and myself.",
+  "ensureSafety2":"Maintain a safe and well-kept vehicle.",
+  "showRespect":"Show Respect",
+  "showRespect1":"Treat all passengers with kindness, respect, and courtesy.",
+  "showRespect2":"Respect the privacy and personal space of every passenger.",
+  "maintainProfessionalism":"Maintain Professionalism",
+  "maintainProfessionalism1":"Be punctual and reliable.",
+  "maintainProfessionalism2":"Keep a clean appearance and a tidy vehicle.",
+  "communicateClearly":"Communicate Clearly",
+  "communicateClearly1":"Use polite and respectful language.",
+  "communicateClearly2":"Provide clear and helpful information to passengers.",
+  "demonstrateIntegrity":"Demonstrate Integrity",
+  "demonstrateIntegrity1":"Be honest and transparent in all interactions.",
+  "demonstrateIntegrity2":"Adhere to all platform policies and guidelines.",
+  "seekImprovement":"Seek Improvement",
+  "seekImprovement1":"Be open to feedback and strive to improve my service.",
+  "pledgeOutro":"By taking this pledge, I commit to providing a safe, respectful, and enjoyable experience for all passengers.",
+  "iAccept":"I Accept",
+  "accept":"Accept",
+  "timeToPickup":"Time to pickup",
+  "distanceToPickup":"Distance to pickup",
+  "customerPreferences":"Customer Preferences",
+  "temperature":"Temperature",
+  "music":"Music",
+  "conversation":"Conversation",
+  "iHaveArrived":"I have arrived",
+  "startTrip":"Start trip",
+  "endTrip":"End trip",
+  "waitingTime":"Waiting time",
+  "timeToDropOff":"Time to  dropoff",
+  "distanceToDropOff":"Distance to dropoff",
+  "pleaseRatePassenger":"Please rate your passenger",
+  "addReviewDetails":"Add review details",
+  "enterDetailsHere":"Enter details here",
+  "driversRewards":"Drivers Rewards",
+  "offlineStatus":"You're currently offline",
+  "onlineStatus":"You're online",
+  "trips":"Trips",
+  "earnings":"Earnings",
+  "makeComplaint":"Make a complaint",
+  "timeOnline":"Time Online",
+  "distance":"Distance",
+  "tripEarnings":"Trip Earnings",
+  "tipsFromTrips":"Tips from Trips",
+  "go":"GO",
+  "off":"OFF",
+  "earnWithRideMe":"Earn with RideMe",
+  "earnWithRideMeInfo":"Drive at your own time and earn extra income with a company that cares about its drivers",
+  "signUp":"Sign up",
+
+  "confirmDeleteDesc": "Sad to see you go. Contact support if you have a problem.",
+  "confirmDeleteConfirmation": "Yes, delete my account",
+  "confirmDelete": "Confirm account deletion",
+  "logoutDesc": "Are you sure you want to logout?",
+
+  "note_2": "Once account is deleted, your data cannot be recovered. This includes any past orders, transaction details, preferences, and other account-related information.",
+  "note_3": "You have 90 days to activate your account if you decide to rejoin the platform in the future. You will need to create a new account if your time away exceeds due days",
+  "note_1": "Deleting your account will result in the loss of access to your account, including order history, saved addresses, payment methods, and any other personalized settings.",
+
+  "deleteAccountHeader": "Are you sure you want to delete your account?",
+
+  "acountAssociatedWith": "Account associated with",
+  "accountAssociatedContinuation": "would be deleted from RideMe",
+
+  "pleaseTakeNote": "Please take note:",
+
+  "tripDistance":"Trip distance",
+  "delayMinutes":"Delay minutes",
+  "paymentDetails":"Payment Details",
+
+  "initialAmount":"Inititial amount",
+  "tripCancelInfo":"Please select reason for cancelling your trip",
+  "userDetails":"User Details",
+  "update":"Update",
+
+
+
+  
+  
+  
+
+
+  "amountAndCurrency":"$ {amount}",
+  "@amountAndCurrency":{
+    "placeholders":{
+      "amount":{
+        "type":"String",
+        "example":"10"
+      }
+    }
+  },
+
+  "cashout":"Cashout ${amount}",
+  "@cashout":{
+    "placeholders":{
+      "amount":{
+        "type":"String",
+        "example":"332.33"
+      }
+    }
+  },
+  "pickUpCustomer":"Picking up {name}",
+  "@pickUpCustomer":{
+    "placeholders":{
+      "name":{
+        "type":"String",
+        "example":"Simon"
+      }
+    }
+  },
+
+
+
+
+
   "didntReceiveACode":"Didn't receive a code ({timer})",
   "@didntReceiveACode":{
     "placeholders":{
