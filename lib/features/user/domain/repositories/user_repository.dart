@@ -66,4 +66,7 @@ abstract class UserRepository {
   //get support contacts
   Future<Either<String, SupportData>> getSupportContacts(
       Map<String, dynamic> params);
+
+  //cache rider id
+  cacheRiderId(int id);
 }

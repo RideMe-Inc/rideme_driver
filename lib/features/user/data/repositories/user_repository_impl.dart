@@ -266,4 +266,9 @@ class UserRepositoryImpl implements UserRepository {
       return Left(networkInfo.noNetowrkMessage);
     }
   }
+
+  @override
+  cacheRiderId(int id) {
+    return localDatasource.cacheRiderId(id);
+  }
 }

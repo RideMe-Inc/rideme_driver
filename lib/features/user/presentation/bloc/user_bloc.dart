@@ -8,6 +8,7 @@ import 'package:rideme_driver/features/user/domain/entities/profile_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/rider_vehicle.dart';
 import 'package:rideme_driver/features/user/domain/entities/support_data.dart';
 import 'package:rideme_driver/features/user/domain/entities/user.dart';
+import 'package:rideme_driver/features/user/domain/usecases/cache_rider_id.dart';
 import 'package:rideme_driver/features/user/domain/usecases/change_availability.dart';
 import 'package:rideme_driver/features/user/domain/usecases/create_driver_license.dart';
 import 'package:rideme_driver/features/user/domain/usecases/create_vehicle.dart';
@@ -44,6 +45,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final EditVehicle editVehicle;
   final GetAllRiderVehicles getAllRiderVehicles;
   final GetSupportContacts getSupportContacts;
+  final CacheRiderId cacheRiderId;
 
   UserBloc({
     required this.getUserProfile,
@@ -60,6 +62,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     required this.createVehicle,
     required this.editVehicle,
     required this.getAllRiderVehicles,
+    required this.cacheRiderId,
     required this.getSupportContacts,
   }) : super(UserInitial()) {
     //!GET USER PROFILE
@@ -279,5 +282,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     } else {
       context.goNamed('signup');
     }
+  }
+
+  cacheRiderID(int id) {
+    return cacheRiderId.call(id);
   }
 }

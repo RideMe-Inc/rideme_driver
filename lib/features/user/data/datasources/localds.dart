@@ -5,6 +5,8 @@ import 'package:rideme_driver/features/user/domain/entities/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class UserLocalDatasource {
+  //cache rider id
+  cacheRiderId(int id);
   // cache user information
   Future cacheUserInfo(User user);
 
@@ -74,5 +76,10 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
     } else {
       throw Exception('Cache Error');
     }
+  }
+
+  @override
+  cacheRiderId(int id) {
+    return sharedPreferences.setInt('rider_id_cache', id);
   }
 }

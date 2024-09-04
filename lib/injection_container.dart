@@ -55,6 +55,7 @@ import 'package:rideme_driver/features/user/data/datasources/localds.dart';
 import 'package:rideme_driver/features/user/data/datasources/remoteds.dart';
 import 'package:rideme_driver/features/user/data/repositories/user_repository_impl.dart';
 import 'package:rideme_driver/features/user/domain/repositories/user_repository.dart';
+import 'package:rideme_driver/features/user/domain/usecases/cache_rider_id.dart';
 import 'package:rideme_driver/features/user/domain/usecases/change_availability.dart';
 import 'package:rideme_driver/features/user/domain/usecases/create_driver_license.dart';
 import 'package:rideme_driver/features/user/domain/usecases/create_vehicle.dart';
@@ -148,9 +149,7 @@ init() async {
 
   //socket
   sl.registerLazySingleton<WebSocket>(() {
-    final socket = WebSocket(Uri.parse('wss://socket.shaqexpress.com/users/'));
-    // final testingSocket =
-    //     WebSocket(Uri.parse('wss://ws.shaqexpress.com/users/'));
+    final socket = WebSocket(Uri.parse('wss://dss.rideme.app'));
 
     return socket;
   });
@@ -418,11 +417,17 @@ initUser() {
       riderPhotoCheck: sl(),
       getSupportContacts: sl(),
       deleteAccount: sl(),
+      cacheRiderId: sl(),
     ),
   );
 
   //usecases
 
+  sl.registerLazySingleton(
+    () => CacheRiderId(
+      repository: sl(),
+    ),
+  );
   sl.registerLazySingleton(
     () => ChangeAvailability(
       repository: sl(),
