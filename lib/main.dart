@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
+import 'package:rideme_driver/background_services.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
 import 'package:rideme_driver/core/theme/app_theme.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
@@ -35,6 +36,8 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
+  await initializeService();
+
   runApp(
     MultiProvider(
       providers: [

@@ -1,6 +1,8 @@
 import Flutter
 import UIKit
 import GoogleMaps
+import flutter_background_service_ios
+
 
 
 @main
@@ -9,8 +11,12 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    //GET OUR OWN MAPS ID
-    GMSServices.provideAPIKey("AIzaSyDLjcqLckWgCLKIW-suyJRd9Gj59lm3lxg")
+
+    GMSServices.provideAPIKey("AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ")
+
+    SwiftFlutterBackgroundServicePlugin.taskIdentifier = "background_services"
+
+
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

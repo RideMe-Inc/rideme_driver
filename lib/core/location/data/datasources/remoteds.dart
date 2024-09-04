@@ -28,7 +28,7 @@ class LocationRemoteDatasourceImpl
   @override
   Future<PlacesModel> searchPlaces(Map<String, dynamic> params) async {
     final uri = Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?fields=formatted_address%2Cname%2Cplace_id&input=${Uri.encodeComponent(params['searchText'])}&region=gh&inputtype=textquery&key=AIzaSyCcNLZGoUqLsA4jeKVudD6DNSLg0odLg1A");
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?fields=formatted_address%2Cname%2Cplace_id&input=${Uri.encodeComponent(params['searchText'])}&region=gh&inputtype=textquery&key=AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ");
 
     final response = await client.post(uri);
 
@@ -36,7 +36,7 @@ class LocationRemoteDatasourceImpl
 
     // final headers = {
     //   "Content-Type": "application/json",
-    //   "X-Goog-Api-Key": "AIzaSyCcNLZGoUqLsA4jeKVudD6DNSLg0odLg1A",
+    //   "X-Goog-Api-Key": "AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ",
     //   "X-Goog-FieldMask":
     //       "places.id, places.displayName,places.formattedAddress"
     // };
