@@ -36,7 +36,8 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
-  await initializeService();
+  // await initializeService();
+  //TODO: BRING BACK BACKGROUND SERVICE
 
   runApp(
     MultiProvider(

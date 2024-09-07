@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/usecase/usecase.dart';
 import 'package:rideme_driver/features/user/domain/entities/license_info.dart';
-import 'package:rideme_driver/features/user/domain/entities/profile_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/rider_vehicle.dart';
 import 'package:rideme_driver/features/user/domain/entities/support_data.dart';
 import 'package:rideme_driver/features/user/domain/entities/user.dart';
@@ -161,7 +160,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(
         response.fold(
           (error) => ChangeAvailabilityError(errorMessage: error),
-          (response) => ChangeAvailabilityLoaded(profileInfo: response),
+          (response) => ChangeAvailabilityLoaded(user: response),
         ),
       );
     });

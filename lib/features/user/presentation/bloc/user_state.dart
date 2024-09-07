@@ -141,9 +141,9 @@ final class ChangeAvailabilityLoading extends UserState {}
 
 //loaded
 class ChangeAvailabilityLoaded extends UserState {
-  final ProfileInfo profileInfo;
+  final User user;
 
-  const ChangeAvailabilityLoaded({required this.profileInfo});
+  const ChangeAvailabilityLoaded({required this.user});
 }
 
 //!PHOTO CHECK

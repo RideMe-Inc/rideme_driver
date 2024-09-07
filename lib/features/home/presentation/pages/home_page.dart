@@ -19,6 +19,7 @@ import 'package:rideme_driver/features/home/presentation/pages/home_drawer.dart'
 
 import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/home/presentation/widgets/home_profile_widget.dart';
+import 'package:rideme_driver/features/home/presentation/widgets/on_off_widget.dart';
 
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
 import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
@@ -171,9 +172,9 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SvgPicture.asset(SvgNameConstants.googleLogoSVG),
-                            CircleAvatar(
-                              radius: Sizes.height(context, 0.03),
-                            ),
+
+                            //ON OR OFF STUFF
+                            const OnOffWidget(),
                             GestureDetector(
                               onTap: homeProvider.isLocationAllowed
                                   ? () async {
