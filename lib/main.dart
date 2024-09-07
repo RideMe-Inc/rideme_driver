@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:rideme_driver/background_services.dart';
+import 'package:rideme_driver/core/notifications/notif_handling.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
 import 'package:rideme_driver/core/theme/app_theme.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
@@ -18,7 +19,11 @@ import 'package:rideme_driver/injection_container.dart' as di;
 import 'package:rideme_driver/injection_container.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint("Handling a background message: ${message.messageId}");
+  handleNotification(
+    message: message,
+    context: null,
+    isInForeground: false,
+  );
 }
 
 main() async {

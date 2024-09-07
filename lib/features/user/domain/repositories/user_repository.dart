@@ -31,8 +31,7 @@ abstract class UserRepository {
 
   /// change availability params
 
-  Future<Either<String, ProfileInfo>> changeAvailability(
-      Map<String, dynamic> params);
+  Future<Either<String, User>> changeAvailability(Map<String, dynamic> params);
 
   ///get cached user
   Future<Either<String, User>> getCachedUser();

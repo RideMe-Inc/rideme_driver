@@ -32,7 +32,7 @@ abstract class UserRemoteDatasource {
   Future<LicenseInfo> getAllLicense(Map<String, dynamic> params);
 
   /// Change availability
-  Future<ProfileInfoModel> changeAvailability(Map<String, dynamic> params);
+  Future<UserModel> changeAvailability(Map<String, dynamic> params);
 
   ///Photo check
   Future<ProfileInfoModel> riderPhotoCheck(Map<String, dynamic> params);
@@ -67,8 +67,6 @@ class UserRemoteDatasourceImpl
       endpoint: Endpoints.profile,
       params: params,
     );
-
-    print(decodedResponse);
 
     return UserModel.fromJson(decodedResponse['profile']);
   }
@@ -116,8 +114,7 @@ class UserRemoteDatasourceImpl
 
   //! CHANGE AVAILABILITY
   @override
-  Future<ProfileInfoModel> changeAvailability(
-      Map<String, dynamic> params) async {
+  Future<UserModel> changeAvailability(Map<String, dynamic> params) async {
     final decodedResponse = await post(
       client: client,
       urls: urls,
@@ -125,7 +122,7 @@ class UserRemoteDatasourceImpl
       endpoint: Endpoints.availability,
     );
 
-    return ProfileInfoModel.fromJson(decodedResponse);
+    return UserModel.fromJson(decodedResponse['profile']);
   }
 
   //photo check

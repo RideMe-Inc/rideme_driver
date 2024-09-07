@@ -129,7 +129,7 @@ class UserRepositoryImpl implements UserRepository {
 
   // Change availability
   @override
-  Future<Either<String, ProfileInfo>> changeAvailability(
+  Future<Either<String, User>> changeAvailability(
       Map<String, dynamic> params) async {
     if (!(await networkInfo.isConnected)) {
       return Left(networkInfo.noNetowrkMessage);
@@ -140,7 +140,7 @@ class UserRepositoryImpl implements UserRepository {
 
       //cache rider info after updating profile information
 
-      await localDatasource.cacheUserInfo(response.rider!);
+      // await localDatasource.cacheUserInfo(response.rider!);
 
       return Right(response);
     } catch (e) {

@@ -9,6 +9,7 @@ import 'package:rideme_driver/features/trips/data/models/all_trips_info.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:rideme_driver/features/trips/data/models/trip_tracking_details_model.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
 abstract class TripRemoteDataSource {
@@ -21,6 +22,19 @@ abstract class TripRemoteDataSource {
   Future<String> reportTrip(Map<String, dynamic> params);
 
   Future<String> rateTrip(Map<String, dynamic> params);
+
+  /// accept or reject trip
+  Future<String> acceptOrRejectTrip(Map<String, dynamic> params);
+
+  //get trip status
+  Future<String> getTripStatus(Map<String, dynamic> params);
+
+  ///get tracking details
+  Future<TripTrackingDetailsModel> getTrackingDetails(
+      Map<String, dynamic> params);
+
+  Future<TripTrackingDetailsModel> driverTripDestinationActions(
+      Map<String, dynamic> params);
 }
 
 class TripRemoteDataSourceImpl
@@ -101,5 +115,55 @@ class TripRemoteDataSourceImpl
     );
 
     return decodedResponse['message'];
+  }
+
+  @override
+  Future<String> acceptOrRejectTrip(Map<String, dynamic> params) async {
+    final decodedResponse = await post(
+      client: client,
+      urls: urls,
+      endpoint: Endpoints.tripActions,
+      params: params,
+    );
+
+    return decodedResponse['message'];
+  }
+
+  @override
+  Future<String> getTripStatus(Map<String, dynamic> params) async {
+    final decodedResponse = await get(
+      client: client,
+      urls: urls,
+      endpoint: Endpoints.tripStatus,
+      params: params,
+    );
+
+    return decodedResponse['message'];
+  }
+
+  @override
+  Future<TripTrackingDetailsModel> getTrackingDetails(
+      Map<String, dynamic> params) async {
+    final decodedResponse = await get(
+      client: client,
+      urls: urls,
+      endpoint: Endpoints.tripDetails,
+      params: params,
+    );
+
+    return TripTrackingDetailsModel.fromJson(decodedResponse['trip']);
+  }
+
+  @override
+  Future<TripTrackingDetailsModel> driverTripDestinationActions(
+      Map<String, dynamic> params) async {
+    final decodedResponse = await post(
+      client: client,
+      urls: urls,
+      endpoint: Endpoints.tripActions,
+      params: params,
+    );
+
+    return TripTrackingDetailsModel.fromJson(decodedResponse['trip']);
   }
 }

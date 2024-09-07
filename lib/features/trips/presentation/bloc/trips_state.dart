@@ -78,3 +78,61 @@ class ReportTripLoaded extends TripsState {
 
   const ReportTripLoaded({required this.report});
 }
+
+//!ACCEPT OR REJECT TRIPS
+//loading
+final class AcceptRejectTripLoading extends TripsState {}
+
+//loaded
+final class AcceptRejectTripLoaded extends TripsState {
+  final String tripId;
+  final bool isReject;
+
+  const AcceptRejectTripLoaded({required this.tripId, required this.isReject});
+}
+
+//!GET TRIP STATUS
+final class GetTripStatusLoading extends TripsState {}
+
+final class GetTripStatusLoaded extends TripsState {
+  final String status;
+
+  const GetTripStatusLoaded({required this.status});
+}
+
+final class GetTripStatusError extends TripsState {
+  final String error;
+
+  const GetTripStatusError({required this.error});
+}
+
+//!TRACK TRIP
+//loading
+final class GetTrackingDetailsLoading extends TripsState {}
+
+//loaded
+final class GetTrackingDetailsLoaded extends TripsState {
+  final TripTrackingDetails tripInfo;
+
+  const GetTrackingDetailsLoaded({required this.tripInfo});
+}
+
+//!RIDER TRIP ACTIONS
+final class RiderTripActionsLoading extends TripsState {}
+
+final class RiderTripActionsLoaded extends TripsState {
+  final TripTrackingDetails tripInfo;
+  final bool? isCompleted;
+
+  const RiderTripActionsLoaded({
+    required this.tripInfo,
+    this.isCompleted,
+  });
+}
+
+//! ERROR
+class GenericTripError extends TripsState {
+  final String errorMessage;
+
+  const GenericTripError({required this.errorMessage});
+}

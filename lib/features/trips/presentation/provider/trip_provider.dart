@@ -73,32 +73,14 @@ class TripProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // //decodePolyline
-  // decodePolyline(CreateTripInfo createTripInfo) async {
-  //   //deal with polylines
+  //decodePolyline
+  decodePolyline(String polyline) async {
+    //deal with polylines
 
-  //   _polyLines = _polylinePoints.decodePolyline(createTripInfo.polyline!);
+    _polyLines = _polylinePoints.decodePolyline(polyline);
 
-  //   _polyLines.insert(
-  //     0,
-  //     PointLatLng(
-  //       createTripInfo.pickupLat?.toDouble() ?? 0,
-  //       createTripInfo.pickupLng?.toDouble() ?? 0,
-  //     ),
-  //   );
-
-  //   _polyLines.add(
-  //     PointLatLng(
-  //       createTripInfo.destinations?.last.lat.toDouble() ?? 0,
-  //       createTripInfo.destinations?.last.lng.toDouble() ?? 0,
-  //     ),
-  //   );
-
-  //   _polyCoordinates =
-  //       _polyLines.map((e) => LatLng(e.latitude, e.longitude)).toList();
-
-  //   notifyListeners();
-  // }
+    notifyListeners();
+  }
 
   resetAllValues() {
     _initialCameraMove = false;

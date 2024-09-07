@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -42,14 +43,21 @@ import 'package:rideme_driver/features/permissions/domain/usecases/request_all_n
 import 'package:rideme_driver/features/permissions/domain/usecases/request_location_permission.dart';
 import 'package:rideme_driver/features/permissions/domain/usecases/request_notif_permission.dart';
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
+import 'package:rideme_driver/features/trips/data/datasource/localds.dart';
 import 'package:rideme_driver/features/trips/data/datasource/remoteds.dart';
 import 'package:rideme_driver/features/trips/data/repository/trip_repository_impl.dart';
 import 'package:rideme_driver/features/trips/domain/repository/trips_repository.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:rideme_driver/features/user/data/datasources/localds.dart';
 import 'package:rideme_driver/features/user/data/datasources/remoteds.dart';
@@ -146,6 +154,9 @@ init() async {
 
   //camera and image picker
   sl.registerLazySingleton(() => ImagePicker());
+
+  //audio player
+  sl.registerLazySingleton(() => AudioPlayer());
 
   //socket
   sl.registerLazySingleton<WebSocket>(() {
@@ -543,10 +554,48 @@ initTrips() {
       rateTrip: sl(),
       getTripInfo: sl(),
       reportTrip: sl(),
+      acceptOrRejectTrip: sl(),
+      getTripStatus: sl(),
+      playSound: sl(),
+      stopSound: sl(),
+      getTrackingDetails: sl(),
+      riderTripDestinationActions: sl(),
     ),
   );
 
   //usecases
+
+  sl.registerLazySingleton(
+    () => RiderTripDestinationActions(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetTrackingDetails(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => PlaySound(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => StopSound(
+      repository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => AcceptOrRejectTrip(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetTripStatus(
+      repository: sl(),
+    ),
+  );
 
   sl.registerLazySingleton(
     () => CancelTrip(
@@ -583,6 +632,7 @@ initTrips() {
     () => TripsRepositoryImpl(
       networkInfo: sl(),
       tripRemoteDataSource: sl(),
+      localDatasource: sl(),
     ),
   );
 
@@ -593,5 +643,9 @@ initTrips() {
       client: sl(),
       socket: sl(),
     ),
+  );
+
+  sl.registerLazySingleton<TripsLocalDatasource>(
+    () => TripsLocalDatasourceImpl(player: sl()),
   );
 }
