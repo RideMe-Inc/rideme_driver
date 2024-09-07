@@ -21,6 +21,12 @@ abstract class TripRemoteDataSource {
   Future<String> reportTrip(Map<String, dynamic> params);
 
   Future<String> rateTrip(Map<String, dynamic> params);
+
+  /// accept or reject trip
+  Future<String> acceptOrRejectTrip(Map<String, dynamic> params);
+
+  //get trip status
+  Future<String> getTripStatus(Map<String, dynamic> params);
 }
 
 class TripRemoteDataSourceImpl
@@ -101,5 +107,17 @@ class TripRemoteDataSourceImpl
     );
 
     return decodedResponse['message'];
+  }
+
+  @override
+  Future<String> acceptOrRejectTrip(Map<String, dynamic> params) {
+    // TODO: implement acceptOrRejectTrip
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getTripStatus(Map<String, dynamic> params) {
+    // TODO: implement getTripStatus
+    throw UnimplementedError();
   }
 }

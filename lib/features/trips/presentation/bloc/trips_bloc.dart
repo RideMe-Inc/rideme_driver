@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rideme_driver/core/extensions/date_extension.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
+import 'package:rideme_driver/features/trips/data/models/trip_request_info_model.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_details.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_data.dart';
 
@@ -12,15 +13,20 @@ import 'package:equatable/equatable.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart';
 
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_info.dart';
+import 'package:rideme_driver/features/trips/domain/entities/trip_request_info.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 
 part 'trips_event.dart';
 part 'trips_state.dart';
@@ -33,12 +39,21 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   final ReportTrip reportTrip;
   final GetTripInfo getTripInfo;
 
+  final AcceptOrRejectTrip acceptOrRejectTrip;
+  final GetTripStatus getTripStatus;
+  final PlaySound playSound;
+  final StopSound stopSound;
+
   TripsBloc({
     required this.cancelTrip,
     required this.getAllTrips,
     required this.rateTrip,
     required this.getTripInfo,
     required this.reportTrip,
+    required this.acceptOrRejectTrip,
+    required this.getTripStatus,
+    required this.playSound,
+    required this.stopSound,
   }) : super(TripsInitial()) {
     //! CANCEL TRIP
 
@@ -117,6 +132,35 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         ),
       );
     });
+
+    //!ACCEPT REJECT TRIP
+    on<AcceptRejectTripEvent>((event, emit) async {
+      emit(AcceptRejectTripLoading());
+      final response = await acceptOrRejectTrip(event.params);
+
+      emit(
+        response.fold(
+          (errorMessage) => GenericTripError(errorMessage: errorMessage),
+          (response) => AcceptRejectTripLoaded(
+              tripId: response, isReject: event.params['type'] == 'reject'),
+        ),
+      );
+    });
+
+    //!GET TRIP STATUS
+
+    on<GetTripStatusEvent>((event, emit) async {
+      emit(GetTripStatusLoading());
+
+      final response = await getTripStatus(event.params);
+
+      emit(
+        response.fold(
+          (error) => GetTripStatusError(error: error),
+          (response) => GetTripStatusLoaded(status: response),
+        ),
+      );
+    });
   }
 
   //return destinations
@@ -185,6 +229,12 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     }
 
     return ids;
+  }
+
+  //parse trip request info
+
+  TripRequestInfo parseTripRequestInfo(String json) {
+    return TripRequestInfoModel.fromJson(jsonDecode(json));
   }
 
   // //pricing data parsing
@@ -301,4 +351,12 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   //       );
   //   }
   // }
+
+  Future playAlertSound(String path) async {
+    return await playSound.call(path);
+  }
+
+  Future stopAlertSound() async {
+    return await stopSound.call();
+  }
 }

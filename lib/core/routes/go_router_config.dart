@@ -12,8 +12,11 @@ import 'package:rideme_driver/features/authentication/presentation/pages/photo_c
 import 'package:rideme_driver/features/authentication/presentation/pages/pledge_page.dart';
 import 'package:rideme_driver/features/authentication/presentation/pages/vehicle_document_page.dart';
 import 'package:rideme_driver/features/home/presentation/pages/home_page.dart';
+import 'package:rideme_driver/features/trips/presentation/pages/track_trip.dart';
+import 'package:rideme_driver/features/trips/presentation/pages/trip_accept_reject.dart';
 import 'package:rideme_driver/features/trips/presentation/pages/trip_history.dart';
 import 'package:rideme_driver/features/trips/presentation/pages/trip_history_details_page.dart';
+import 'package:rideme_driver/features/trips/presentation/pages/trip_status_check_page.dart';
 import 'package:rideme_driver/features/user/presentation/pages/delete_account_page.dart';
 import 'package:rideme_driver/features/user/presentation/pages/edit_profile.dart';
 import 'package:rideme_driver/features/user/presentation/pages/safety_page.dart';
@@ -109,48 +112,74 @@ final GoRouter goRouterConfiguration = GoRouter(
 
     //HOME
     GoRoute(
-        name: 'home',
-        path: '/home',
-        builder: (context, state) => const HomePage(),
-        routes: [
-          //deleteAccount
-          GoRoute(
-            name: 'deleteAccount',
-            path: 'delete-account',
-            builder: (context, state) => const DeleteAccountPage(),
-          ),
+      name: 'home',
+      path: '/home',
+      builder: (context, state) => const HomePage(),
+      routes: [
+        //deleteAccount
+        GoRoute(
+          name: 'deleteAccount',
+          path: 'delete-account',
+          builder: (context, state) => const DeleteAccountPage(),
+        ),
 
-          //safety
-          GoRoute(
-            name: 'safety',
-            path: 'safety',
-            builder: (context, state) => const SafetyPage(),
-          ),
+        //safety
+        GoRoute(
+          name: 'safety',
+          path: 'safety',
+          builder: (context, state) => const SafetyPage(),
+        ),
 
-          //profile
+        //profile
 
-          //edit profile
-          GoRoute(
-            name: 'editProfile',
-            path: 'edit',
-            builder: (context, state) => const EditProfilePage(),
-          ),
+        //edit profile
+        GoRoute(
+          name: 'editProfile',
+          path: 'edit',
+          builder: (context, state) => const EditProfilePage(),
+        ),
 
-          //history
+        //history
 
-          GoRoute(
-            name: 'trips',
-            path: 'trips',
-            builder: (context, state) => const TripHistoryPage(),
-            routes: [
-              GoRoute(
-                name: 'historyDetails',
-                path: 'history-details',
-                builder: (context, state) => TripHistoryDetailsPage(
-                    tripId: state.uri.queryParameters['tripId'] ?? ''),
-              )
-            ],
-          ),
-        ])
+        GoRoute(
+          name: 'trips',
+          path: 'trips',
+          builder: (context, state) => const TripHistoryPage(),
+          routes: [
+            GoRoute(
+              name: 'historyDetails',
+              path: 'history-details',
+              builder: (context, state) => TripHistoryDetailsPage(
+                  tripId: state.uri.queryParameters['tripId'] ?? ''),
+            )
+          ],
+        ),
+      ],
+    ),
+
+    GoRoute(
+      name: 'tripStatusCheck',
+      path: 'trip-status-check',
+      builder: (context, state) => TripStatusChecker(
+        tripData: state.uri.queryParameters['tripData'],
+        tripId: state.uri.queryParameters['tripId'],
+      ),
+    ),
+
+    //TRIP ACCEPT REJECT
+    GoRoute(
+      name: 'tripAcceptReject',
+      path: 'trip-accept-reject',
+      builder: (context, state) => TripAcceptRejectPage(
+        tripRequestInfo: state.uri.queryParameters['tripinfo']!,
+      ),
+    ),
+
+    GoRoute(
+      name: 'trackTrip',
+      path: 'track-trip',
+      builder: (context, state) =>
+          TrackTripPage(tripId: state.uri.queryParameters['tripId']!),
+    )
   ],
 );

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:rideme_driver/core/exceptions/generic_exception_class.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
+import 'package:rideme_driver/features/trips/data/datasource/localds.dart';
 import 'package:rideme_driver/features/trips/data/datasource/remoteds.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart';
 
@@ -10,9 +11,13 @@ import 'package:rideme_driver/features/trips/domain/repository/trips_repository.
 class TripsRepositoryImpl implements TripsRepository {
   final NetworkInfo networkInfo;
   final TripRemoteDataSource tripRemoteDataSource;
+  final TripsLocalDatasource localDatasource;
 
-  TripsRepositoryImpl(
-      {required this.networkInfo, required this.tripRemoteDataSource});
+  TripsRepositoryImpl({
+    required this.networkInfo,
+    required this.tripRemoteDataSource,
+    required this.localDatasource,
+  });
 
   // cancel trip
 
@@ -111,5 +116,48 @@ class TripsRepositoryImpl implements TripsRepository {
     } else {
       return Left(networkInfo.noNetowrkMessage);
     }
+  }
+
+  // accept or reject trip
+  @override
+  Future<Either<String, String>> acceptOrRejectTrip(
+      Map<String, dynamic> params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await tripRemoteDataSource.acceptOrRejectTrip(params);
+
+        return Right(response);
+      } catch (e) {
+        return Left(e.toString());
+      }
+    } else {
+      return Left(networkInfo.noNetowrkMessage);
+    }
+  }
+
+  //get trip status
+  @override
+  Future<Either<String, String>> getTripStatus(
+      Map<String, dynamic> params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await tripRemoteDataSource.getTripStatus(params);
+        return Right(response);
+      } catch (e) {
+        return Left(e.toString());
+      }
+    } else {
+      return Left(networkInfo.noNetowrkMessage);
+    }
+  }
+
+  @override
+  Future playSound(String path) async {
+    return localDatasource.playSound(path);
+  }
+
+  @override
+  Future stopSound() async {
+    return localDatasource.stopSound();
   }
 }

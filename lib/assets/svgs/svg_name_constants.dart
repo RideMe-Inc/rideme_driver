@@ -18,6 +18,7 @@ class SvgNameConstants {
   static const logoutSVG = '$_baseUrl/logout.svg';
   static const earningsSVG = '$_baseUrl/earnings.svg';
   static const notificationSVG = '$_baseUrl/notification.svg';
+  static const timerObjectSVG = '$_baseUrl/timer_object.svg';
   static const dropOffPointActiveSVG = '$_baseUrl/start_point.svg';
 
   static const paymentSVG = '$_baseUrl/payment.svg';

@@ -45,3 +45,17 @@ class ReportTripEvent extends TripsEvent {
 
   const ReportTripEvent({required this.params});
 }
+
+//!ACCEPT OR REJECT TRIP
+final class AcceptRejectTripEvent extends TripsEvent {
+  final Map<String, dynamic> params;
+
+  const AcceptRejectTripEvent({required this.params});
+}
+
+//!GET TRIP STATUS
+final class GetTripStatusEvent extends TripsEvent {
+  final Map<String, dynamic> params;
+
+  const GetTripStatusEvent({required this.params});
+}

@@ -13,4 +13,16 @@ abstract class TripsRepository {
   Future<Either<String, String>> reportTrip(Map<String, dynamic> params);
 
   Future<Either<String, String>> rateTrip(Map<String, dynamic> params);
+
+  Future<Either<String, String>> acceptOrRejectTrip(
+      Map<String, dynamic> params);
+
+  //get trip status
+  Future<Either<String, String>> getTripStatus(Map<String, dynamic> params);
+
+  ///play sound
+  Future playSound(String path);
+
+  ///stop sound
+  Future stopSound();
 }
