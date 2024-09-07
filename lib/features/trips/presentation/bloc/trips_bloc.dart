@@ -14,11 +14,13 @@ import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart
 
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_info.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_request_info.dart';
+import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
@@ -26,6 +28,7 @@ import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 
 part 'trips_event.dart';
@@ -43,6 +46,8 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   final GetTripStatus getTripStatus;
   final PlaySound playSound;
   final StopSound stopSound;
+  final GetTrackingDetails getTrackingDetails;
+  final RiderTripDestinationActions riderTripDestinationActions;
 
   TripsBloc({
     required this.cancelTrip,
@@ -54,6 +59,8 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required this.getTripStatus,
     required this.playSound,
     required this.stopSound,
+    required this.getTrackingDetails,
+    required this.riderTripDestinationActions,
   }) : super(TripsInitial()) {
     //! CANCEL TRIP
 
@@ -158,6 +165,38 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         response.fold(
           (error) => GetTripStatusError(error: error),
           (response) => GetTripStatusLoaded(status: response),
+        ),
+      );
+    });
+
+    //!TRACK TRIP
+    on<GetTrackingDetailsEvent>((event, emit) async {
+      emit(GetTrackingDetailsLoading());
+      final response = await getTrackingDetails(event.params);
+
+      emit(
+        response.fold(
+          (errorMessage) => GenericTripError(errorMessage: errorMessage),
+          (response) => GetTrackingDetailsLoaded(
+            tripInfo: response,
+          ),
+        ),
+      );
+    });
+
+    //!RIDER TRIP ACTIONS
+    on<RiderTripActionsEvent>((event, emit) async {
+      emit(RiderTripActionsLoading());
+
+      final response = await riderTripDestinationActions(event.params);
+
+      emit(
+        response.fold(
+          (l) => GenericTripError(errorMessage: l),
+          (r) => RiderTripActionsLoaded(
+            tripInfo: r,
+            isCompleted: event.isCompleted,
+          ),
         ),
       );
     });

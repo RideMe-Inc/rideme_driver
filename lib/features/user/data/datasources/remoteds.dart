@@ -68,8 +68,6 @@ class UserRemoteDatasourceImpl
       params: params,
     );
 
-    print(decodedResponse);
-
     return UserModel.fromJson(decodedResponse['profile']);
   }
 

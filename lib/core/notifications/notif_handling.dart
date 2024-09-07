@@ -28,8 +28,6 @@ Future handleNotification({
   );
 
   switch (message.data['event']) {
-    //TODO: WORK ON THE RIGHT NOTIFICATION SETUPS HERE
-
     case 'trips/requested':
 
       //navigate to trip accept page

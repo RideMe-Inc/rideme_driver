@@ -59,3 +59,21 @@ final class GetTripStatusEvent extends TripsEvent {
 
   const GetTripStatusEvent({required this.params});
 }
+
+//!TRACK TRIP
+final class GetTrackingDetailsEvent extends TripsEvent {
+  final Map<String, dynamic> params;
+
+  const GetTrackingDetailsEvent({required this.params});
+}
+
+//!TRIP ACTIONS
+final class RiderTripActionsEvent extends TripsEvent {
+  final Map<String, dynamic> params;
+  final bool? isCompleted;
+
+  const RiderTripActionsEvent({
+    required this.params,
+    this.isCompleted,
+  });
+}

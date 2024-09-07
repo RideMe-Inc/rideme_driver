@@ -106,6 +106,30 @@ final class GetTripStatusError extends TripsState {
   const GetTripStatusError({required this.error});
 }
 
+//!TRACK TRIP
+//loading
+final class GetTrackingDetailsLoading extends TripsState {}
+
+//loaded
+final class GetTrackingDetailsLoaded extends TripsState {
+  final TripTrackingDetails tripInfo;
+
+  const GetTrackingDetailsLoaded({required this.tripInfo});
+}
+
+//!RIDER TRIP ACTIONS
+final class RiderTripActionsLoading extends TripsState {}
+
+final class RiderTripActionsLoaded extends TripsState {
+  final TripTrackingDetails tripInfo;
+  final bool? isCompleted;
+
+  const RiderTripActionsLoaded({
+    required this.tripInfo,
+    this.isCompleted,
+  });
+}
+
 //! ERROR
 class GenericTripError extends TripsState {
   final String errorMessage;

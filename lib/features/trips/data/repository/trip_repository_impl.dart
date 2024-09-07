@@ -6,6 +6,7 @@ import 'package:rideme_driver/features/trips/data/datasource/remoteds.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart';
 
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_info.dart';
+import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/repository/trips_repository.dart';
 
 class TripsRepositoryImpl implements TripsRepository {
@@ -159,5 +160,37 @@ class TripsRepositoryImpl implements TripsRepository {
   @override
   Future stopSound() async {
     return localDatasource.stopSound();
+  }
+
+  @override
+  Future<Either<String, TripTrackingDetails>> getTrackingDetails(
+      Map<String, dynamic> params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await tripRemoteDataSource.getTrackingDetails(params);
+        return Right(response);
+      } catch (e) {
+        return Left(e.toString());
+      }
+    } else {
+      return Left(networkInfo.noNetowrkMessage);
+    }
+  }
+
+  // rider trip destination actions
+  @override
+  Future<Either<String, TripTrackingDetails>> driverTripDestinationActions(
+      Map<String, dynamic> params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response =
+            await tripRemoteDataSource.driverTripDestinationActions(params);
+        return Right(response);
+      } catch (e) {
+        return Left(e.toString());
+      }
+    } else {
+      return Left(networkInfo.noNetowrkMessage);
+    }
   }
 }

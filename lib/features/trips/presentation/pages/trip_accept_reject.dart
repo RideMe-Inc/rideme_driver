@@ -88,8 +88,10 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
         "lat": position.latitude,
         "lng": position.longitude,
       },
-      "type": isRejectTrip ? 'reject' : 'accept',
-      "urlParameters": {"tripId": tripRequestInfo!.id},
+      "urlParameters": {
+        "id": tripRequestInfo!.id,
+        "actions": isRejectTrip ? 'reject' : 'accept',
+      },
     };
 
     //send event
