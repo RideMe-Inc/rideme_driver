@@ -39,4 +39,24 @@ class SvgNameConstants {
   static const searchSVG = '$_baseUrl/search.svg';
   static const googleLogoSVG = '$_baseUrl/google_watermark.svg';
   static const alertCircle = '$_baseUrl/alert_circle.svg';
+
+  //directions
+  static const forkLeft = '$_baseUrl/fork_left.svg';
+  static const forkRight = '$_baseUrl/fork_right.svg';
+  static const genericDirection = '$_baseUrl/generic_direction.svg';
+  static const merge = '$_baseUrl/merge.svg';
+  static const rampLeft = '$_baseUrl/ramp_left.svg';
+  static const rampRight = '$_baseUrl/ramp_right.svg';
+  static const roundaboutRight = '$_baseUrl/roundabout_right.svg';
+  static const roundaboutLeft = '$_baseUrl/roundabout_left.svg';
+  static const straight = '$_baseUrl/straight.svg';
+  static const turnRight = '$_baseUrl/turn_right.svg';
+  static const turnLeft = '$_baseUrl/turn_left.svg';
+  static const turnSharpRight = '$_baseUrl/turn_sharp_right.svg';
+  static const turnSharpLeft = '$_baseUrl/turn_sharp_left.svg';
+  static const turnSlightRight = '$_baseUrl/turn_slight_right.svg';
+  static const turnSlightLeft = '$_baseUrl/turn_slight_left.svg';
+  static const uTurnLeft = '$_baseUrl/u_turn_left.svg';
+  static const uTurnRight = '$_baseUrl/u_turn_right.svg';
+  static const locationPin = '$_baseUrl/locationPin.svg';
 }
