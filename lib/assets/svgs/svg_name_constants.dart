@@ -58,5 +58,5 @@ class SvgNameConstants {
   static const turnSlightLeft = '$_baseUrl/turn_slight_left.svg';
   static const uTurnLeft = '$_baseUrl/u_turn_left.svg';
   static const uTurnRight = '$_baseUrl/u_turn_right.svg';
-  static const locationPin = '$_baseUrl/locationPin.svg';
+  static const locationPin = '$_baseUrl/location_pin.svg';
 }
