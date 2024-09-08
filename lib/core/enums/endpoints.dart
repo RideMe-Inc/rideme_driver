@@ -15,7 +15,7 @@ enum Endpoints {
   licenses(value: '/licenses'),
   vehicles(value: '/vehicles'),
   editVehicles(value: '/vehicles/:vehicleId'),
-  availability(value: '/profile/availability'),
+  availability(value: '/profile/availabilities'),
   photoCheck(value: '/photo-check'),
   getSupportContacts(value: '/configs/support-contact'),
 
