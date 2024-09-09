@@ -85,7 +85,7 @@ void onStart(ServiceInstance service) async {
           "lat": position.latitude,
           "lng": position.longitude,
           "heading": position.heading,
-          "rider_id": riderId ?? '',
+          "driver_id": riderId ?? '',
         }
       };
 
