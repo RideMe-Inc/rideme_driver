@@ -23,4 +23,8 @@ class ImageNameConstants {
   static const locationPinIMG = '$_baseUrl/location_pin.png';
   static const noTripsImagePinIMG = '$_baseUrl/no_trips_image.png';
   static const noDriverIMG = '$_baseUrl/no_driver.png';
+  static const startTrip = '$_baseUrl/start_point.png';
+  static const endTrip = '$_baseUrl/end_point.png';
+  static const carTracking = '$_baseUrl/car_tracking.png';
+  static const driverTracking = '$_baseUrl/driver_tracking.png';
 }
