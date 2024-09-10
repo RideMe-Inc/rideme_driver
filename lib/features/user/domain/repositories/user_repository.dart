@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:rideme_driver/features/user/domain/entities/driver_object.dart';
 import 'package:rideme_driver/features/user/domain/entities/license_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/profile_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/rider_vehicle.dart';
@@ -7,7 +8,8 @@ import 'package:rideme_driver/features/user/domain/entities/user.dart';
 
 abstract class UserRepository {
   //get user profile
-  Future<Either<String, User>> getUserProfile(Map<String, dynamic> params);
+  Future<Either<String, DriverObject>> getUserProfile(
+      Map<String, dynamic> params);
 
   //delete account
   Future<Either<String, String>> deleteAccount(Map<String, dynamic> params);

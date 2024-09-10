@@ -140,6 +140,8 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
     super.dispose();
   }
 
+  //TODO: CHECK MAP DESIGN WITH POLYLINE STUFF
+
   @override
   Widget build(BuildContext context) {
     tripProvider = context.watch<TripProvider>();

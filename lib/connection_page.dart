@@ -151,11 +151,12 @@ class _ConnectionPageState extends State<ConnectionPage> {
             listener: (context, state) {
               if (state is GetUserProfileLoaded) {
                 //udpate provider with user data and navigate to home
-                context.read<UserProvider>().updateUserInfo = state.user;
-                userBloc.cacheRiderID(state.user.id?.toInt() ?? 1);
+                context.read<UserProvider>().updateUserInfo =
+                    state.driver.profile;
+                userBloc.cacheRiderID(state.driver.profile.id?.toInt() ?? 1);
 
                 userBloc.navigateRiderBasedOnProfileCompletion(
-                    state.user, context);
+                    state.driver, context);
               }
 
               if (state is GetUserProfileError) {

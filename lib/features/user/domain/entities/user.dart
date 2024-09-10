@@ -12,8 +12,6 @@ class User extends Equatable {
       status,
       availability;
 
-  final UserOngoingTrips? ongoingTrip;
-
   const User({
     required this.id,
     required this.rating,
@@ -25,7 +23,6 @@ class User extends Equatable {
     required this.address,
     required this.status,
     required this.requestedDeletion,
-    required this.ongoingTrip,
     required this.hasLicense,
     required this.hasVehicle,
     required this.availability,
@@ -47,7 +44,6 @@ class User extends Equatable {
         "address": address,
         "requested_deletion": requestedDeletion,
         "availability": availability,
-        "ongoing_trip": ongoingTrip?.toMap(),
       };
 
   @override
@@ -61,36 +57,10 @@ class User extends Equatable {
         profileUrl,
         status,
         requestedDeletion,
-        ongoingTrip,
         hasLicense,
         address,
         hasVehicle,
         photoCheckRequired,
         availability,
-      ];
-}
-
-//ONGOING TRIPS
-class UserOngoingTrips extends Equatable {
-  final int id;
-  final String trackingNumber, status;
-
-  const UserOngoingTrips({
-    required this.id,
-    required this.trackingNumber,
-    required this.status,
-  });
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "tracking_number": trackingNumber,
-        "status": status,
-      };
-
-  @override
-  List<Object?> get props => [
-        id,
-        trackingNumber,
-        status,
       ];
 }

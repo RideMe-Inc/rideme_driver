@@ -3,6 +3,7 @@ import 'package:rideme_driver/core/exceptions/generic_exception_class.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
 import 'package:rideme_driver/features/user/data/datasources/localds.dart';
 import 'package:rideme_driver/features/user/data/datasources/remoteds.dart';
+import 'package:rideme_driver/features/user/data/models/driver_object_model.dart';
 import 'package:rideme_driver/features/user/domain/entities/license_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/profile_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/rider_vehicle.dart';
@@ -21,7 +22,7 @@ class UserRepositoryImpl implements UserRepository {
       required this.remoteDatasource});
 
   @override
-  Future<Either<String, User>> getUserProfile(
+  Future<Either<String, DriverObjectModel>> getUserProfile(
       Map<String, dynamic> params) async {
     if (!(await networkInfo.isConnected)) {
       return Left(networkInfo.noNetowrkMessage);
