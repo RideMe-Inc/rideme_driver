@@ -41,6 +41,7 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
+
   await initializeService();
 
   runApp(

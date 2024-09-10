@@ -75,12 +75,12 @@ class HomeProvider extends ChangeNotifier {
   //load initial marker
   loadInitialMarker() async {
     final markericon =
-        await getBytesFromAsset(ImageNameConstants.carTracking, 120);
+        await getBytesFromAsset(ImageNameConstants.carTracking, 35);
     final starterIcon =
         await getBytesFromAsset(ImageNameConstants.startTrip, 20);
     final endedIcon = await getBytesFromAsset(ImageNameConstants.endTrip, 20);
     final trackingIcon =
-        await getBytesFromAsset(ImageNameConstants.driverTracking, 45);
+        await getBytesFromAsset(ImageNameConstants.driverTracking, 35);
 
     _customMarkerIcon = BitmapDescriptor.bytes(markericon);
     _startIcon = BitmapDescriptor.bytes(starterIcon);

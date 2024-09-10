@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:location/location.dart' as loc;
 import 'package:rideme_driver/assets/svgs/svg_name_constants.dart';
 import 'package:rideme_driver/core/notifications/notif_handler.dart';
 
@@ -44,6 +45,9 @@ class _HomePageState extends State<HomePage> {
   DateTime chosenDate = DateTime.now();
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
 
+  loc.Location location = loc.Location();
+  loc.LocationData? locationData;
+
   double? lat;
   double? lng;
 
@@ -62,6 +66,28 @@ class _HomePageState extends State<HomePage> {
             target: LatLng(position.latitude, position.longitude), zoom: 14.5),
       ));
     }
+  }
+
+  locationListenerEvent() async {
+    location.onLocationChanged.listen(
+      (event) {
+        setState(() {
+          locationData = event;
+        });
+
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target: LatLng(
+                  locationData?.latitude ?? 0,
+                  locationData?.longitude ?? 0,
+                ),
+                bearing: locationData?.heading ?? 0,
+                zoom: 17.5),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -93,6 +119,9 @@ class _HomePageState extends State<HomePage> {
       body: BlocListener(
         bloc: permissionBloc,
         listener: (context, state) {
+          if (state is LocationPemApproved) {
+            locationListenerEvent();
+          }
           // homeProvider.setNumberOfActiveTrips = user?.ongoingTrips?.length ?? 0;
           if (state is LocationPemDeclined) {
             homeProvider.updateLocationAllowed = false;
@@ -103,7 +132,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: double.infinity,
               child: GoogleMap(
-                myLocationEnabled: true,
+                myLocationEnabled: false,
                 mapType: MapType.terrain,
                 myLocationButtonEnabled: false,
                 onMapCreated: onMapCreated,
@@ -111,7 +140,15 @@ class _HomePageState extends State<HomePage> {
                   target: LatLng(44.9706674, -93.3438785),
                   zoom: 15,
                 ),
-                markers: homeProvider.markers,
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('rider_location'),
+                    icon: homeProvider.customMarkerIcon,
+                    position: LatLng(locationData?.latitude ?? 0,
+                        locationData?.longitude ?? 0),
+                    // rotation: locationData?.heading ?? 0,
+                  )
+                },
               ),
             ),
 
