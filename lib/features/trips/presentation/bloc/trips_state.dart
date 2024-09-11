@@ -117,6 +117,12 @@ final class GetTrackingDetailsLoaded extends TripsState {
   const GetTrackingDetailsLoaded({required this.tripInfo});
 }
 
+final class GetTrackingDetailsError extends TripsState {
+  final String message;
+
+  const GetTrackingDetailsError({required this.message});
+}
+
 //!RIDER TRIP ACTIONS
 final class RiderTripActionsLoading extends TripsState {}
 

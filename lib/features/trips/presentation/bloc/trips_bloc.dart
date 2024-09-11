@@ -176,7 +176,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (errorMessage) => GenericTripError(errorMessage: errorMessage),
+          (errorMessage) => GetTrackingDetailsError(message: errorMessage),
           (response) => GetTrackingDetailsLoaded(
             tripInfo: response,
           ),

@@ -27,6 +27,7 @@ class TripTrackingDetailsModel extends TripTrackingDetails {
       required super.polyline,
       required super.music,
       required super.conversation,
+      required super.arrivedAt,
       required super.nextStop,
       required super.user});
 
@@ -50,6 +51,7 @@ class TripTrackingDetailsModel extends TripTrackingDetails {
       extraFees: json["extra_fees"],
       totalAmount: json["total_amount"],
       waitingPenalty: json["waiting_penalty"],
+      arrivedAt: json["arrived_at"],
       polyline: json["polyline"],
       pickupGeoDataId: json['pickup_geo_data_id'],
       temperature: json['temperature'],
@@ -66,17 +68,16 @@ class TripTrackingDetailsModel extends TripTrackingDetails {
 }
 
 class RiderInfoModel extends RiderInfo {
-  RiderInfoModel(
-      {required super.name,
-      required super.id,
-      required super.lat,
-      required super.lng});
+  RiderInfoModel({
+    required super.name,
+    required super.rating,
+    required super.phone,
+  });
 
   //fromJson
   factory RiderInfoModel.fromJson(Map<String, dynamic> json) => RiderInfoModel(
-        name: json['name'],
-        id: json['id'],
-        lat: json['lat'],
-        lng: json['lng'],
+        name: json['first_name'],
+        rating: json['rating'],
+        phone: json['phone'],
       );
 }
