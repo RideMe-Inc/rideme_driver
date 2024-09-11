@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart';
+import 'package:rideme_driver/features/trips/domain/entities/directions_object.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_info.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 
@@ -32,5 +33,9 @@ abstract class TripsRepository {
       Map<String, dynamic> params);
 
   Future<Either<String, TripTrackingDetails>> driverTripDestinationActions(
+      Map<String, dynamic> params);
+
+  //GET DIRECTIONS
+  Future<Either<String, DirectionsObject>> getDirections(
       Map<String, dynamic> params);
 }

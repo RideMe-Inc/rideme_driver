@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:rideme_driver/core/enums/endpoints.dart';
 
@@ -6,6 +7,7 @@ import 'package:rideme_driver/core/mixins/remote_request_mixin.dart';
 
 import 'package:rideme_driver/core/urls/urls.dart';
 import 'package:rideme_driver/features/trips/data/models/all_trips_info.dart';
+import 'package:rideme_driver/features/trips/data/models/directions_object_model.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
 import 'package:http/http.dart' as http;
@@ -35,6 +37,9 @@ abstract class TripRemoteDataSource {
 
   Future<TripTrackingDetailsModel> driverTripDestinationActions(
       Map<String, dynamic> params);
+
+  //GET DIRECTIONS
+  Future<DirectionsObjectModel> getDirections(Map<String, dynamic> params);
 }
 
 class TripRemoteDataSourceImpl
@@ -166,5 +171,17 @@ class TripRemoteDataSourceImpl
     );
 
     return TripTrackingDetailsModel.fromJson(decodedResponse['trip']);
+  }
+
+  @override
+  Future<DirectionsObjectModel> getDirections(
+      Map<String, dynamic> params) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/directions/json?origin=heading=${params['origin_heading']}:${params['origin_lat']},${params['origin_lng']}&destination=${params['destination_lat']},${params['destination_lng']}&key=AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ',
+    );
+
+    final response = await client.get(url);
+
+    return DirectionsObjectModel.fromJson(jsonDecode(response.body));
   }
 }

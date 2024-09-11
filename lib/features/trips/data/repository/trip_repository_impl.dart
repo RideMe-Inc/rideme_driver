@@ -3,6 +3,7 @@ import 'package:rideme_driver/core/exceptions/generic_exception_class.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
 import 'package:rideme_driver/features/trips/data/datasource/localds.dart';
 import 'package:rideme_driver/features/trips/data/datasource/remoteds.dart';
+import 'package:rideme_driver/features/trips/data/models/directions_object_model.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_info.dart';
 
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_info.dart';
@@ -185,6 +186,23 @@ class TripsRepositoryImpl implements TripsRepository {
       try {
         final response =
             await tripRemoteDataSource.driverTripDestinationActions(params);
+        return Right(response);
+      } catch (e) {
+        return Left(e.toString());
+      }
+    } else {
+      return Left(networkInfo.noNetowrkMessage);
+    }
+  }
+
+  //GET DIRECTIONS
+
+  @override
+  Future<Either<String, DirectionsObjectModel>> getDirections(
+      Map<String, dynamic> params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await tripRemoteDataSource.getDirections(params);
         return Right(response);
       } catch (e) {
         return Left(e.toString());

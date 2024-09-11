@@ -50,6 +50,7 @@ import 'package:rideme_driver/features/trips/domain/repository/trips_repository.
 import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_directions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
@@ -560,10 +561,17 @@ initTrips() {
       stopSound: sl(),
       getTrackingDetails: sl(),
       riderTripDestinationActions: sl(),
+      getDirections: sl(),
     ),
   );
 
   //usecases
+
+  sl.registerLazySingleton(
+    () => GetDirections(
+      repository: sl(),
+    ),
+  );
 
   sl.registerLazySingleton(
     () => RiderTripDestinationActions(

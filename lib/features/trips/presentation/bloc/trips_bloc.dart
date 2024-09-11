@@ -7,6 +7,7 @@ import 'package:rideme_driver/core/extensions/date_extension.dart';
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
 import 'package:rideme_driver/features/trips/data/models/trip_request_info_model.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_details.dart';
+import 'package:rideme_driver/features/trips/domain/entities/directions_object.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_data.dart';
 
 import 'package:equatable/equatable.dart';
@@ -20,6 +21,7 @@ import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_directions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
@@ -46,6 +48,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   final GetTripStatus getTripStatus;
   final PlaySound playSound;
   final StopSound stopSound;
+  final GetDirections getDirections;
   final GetTrackingDetails getTrackingDetails;
   final RiderTripDestinationActions riderTripDestinationActions;
 
@@ -61,6 +64,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required this.stopSound,
     required this.getTrackingDetails,
     required this.riderTripDestinationActions,
+    required this.getDirections,
   }) : super(TripsInitial()) {
     //! CANCEL TRIP
 
@@ -197,6 +201,20 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
             tripInfo: r,
             isCompleted: event.isCompleted,
           ),
+        ),
+      );
+    });
+
+    //!GET DIRECTIONS
+    on<GetDirectionsEvent>((event, emit) async {
+      emit(GetDirectionsLoading());
+
+      final response = await getDirections(event.params);
+
+      emit(
+        response.fold(
+          (error) => GetDirectionsError(error: error),
+          (response) => GetDirectionsLoaded(directions: response),
         ),
       );
     });

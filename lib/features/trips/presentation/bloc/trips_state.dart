@@ -136,6 +136,21 @@ final class RiderTripActionsLoaded extends TripsState {
   });
 }
 
+//!GET DIRECTIONS
+final class GetDirectionsLoading extends TripsState {}
+
+final class GetDirectionsLoaded extends TripsState {
+  final DirectionsObject directions;
+
+  const GetDirectionsLoaded({required this.directions});
+}
+
+final class GetDirectionsError extends TripsState {
+  final String error;
+
+  const GetDirectionsError({required this.error});
+}
+
 //! ERROR
 class GenericTripError extends TripsState {
   final String errorMessage;
