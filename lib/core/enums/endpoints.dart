@@ -23,6 +23,7 @@ enum Endpoints {
   trip(value: '/trips'),
   bookTrip(value: '/trips/:id/book'),
   tripDetails(value: '/trips/:id'),
+  trackTrip(value: '/trips/:id/tracking'),
   reportTrip(value: '/trips/:id/reports'),
   rateTrip(value: '/trips/:id/ratings'),
   tripActions(value: '/trips/:id/:actions'),

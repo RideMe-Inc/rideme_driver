@@ -147,9 +147,10 @@ class TripRemoteDataSourceImpl
     final decodedResponse = await get(
       client: client,
       urls: urls,
-      endpoint: Endpoints.tripDetails,
+      endpoint: Endpoints.trackTrip,
       params: params,
     );
+    print(decodedResponse);
 
     return TripTrackingDetailsModel.fromJson(decodedResponse['trip']);
   }

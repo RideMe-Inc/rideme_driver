@@ -456,10 +456,23 @@
 
 
 
-  
-  
-  
 
+  
+  
+  
+  "minAndDistanceLeft":"{min} min away ({distance} km)",
+  "@minAndDistanceLeft":{
+    "placeholders":{
+      "min":{
+        "type":"String",
+        "example":"5"
+      },
+      "distance":{
+        "type":"String",
+        "example":"5"
+      }
+    }
+  },
 
   "amountAndCurrency":"$ {amount}",
   "@amountAndCurrency":{

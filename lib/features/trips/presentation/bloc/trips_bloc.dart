@@ -398,4 +398,15 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   Future stopAlertSound() async {
     return await stopSound.call();
   }
+
+  String dropOffString(
+      {required int totalStops, required int completedStopsCount}) {
+    if (totalStops - completedStopsCount == 1) {
+      return 'Drop off ';
+    } else {
+      return totalStops - completedStopsCount == 2
+          ? 'Going to stop '
+          : 'Going to stop ${completedStopsCount + 1} ';
+    }
+  }
 }

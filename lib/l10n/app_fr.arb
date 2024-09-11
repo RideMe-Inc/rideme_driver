@@ -472,7 +472,8 @@
 "amountAndCurrency":"$ {amount}",
 "initialAmount":"Montant initial",
 "userDetails":"Détails de l'utilisateur",
-"update":"Mise à jour"
+"update":"Mise à jour",
+"minAndDistanceLeft":"{min} min away ({distance} km)"
 
 
 }
