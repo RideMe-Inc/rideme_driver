@@ -33,13 +33,13 @@
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to allow you upload real time picture</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open to recommend and personalize feed to suit your geographic.</string>
+	<string>This app needs access to location when open to map user ride requests around you.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location always to continue to update your feed with your shops around you.</string>
+	<string>This app needs access to location always to continue to update your availability for ride requests.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>We would like to send you notifications about your orders and recommendations</string>
+	<string>We would like to send you notifications about your trips</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app uses tracking data to find and suggest riders near you.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

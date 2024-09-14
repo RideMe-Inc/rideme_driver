@@ -136,6 +136,7 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
   @override
   void dispose() {
     colorTimer.cancel();
+    timer?.cancel();
     tripsBloc.stopAlertSound();
     super.dispose();
   }

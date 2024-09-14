@@ -70,7 +70,7 @@ void onStart(ServiceInstance service) async {
     },
   );
 
-  Timer.periodic(const Duration(seconds: 3), (timer) async {
+  Timer.periodic(const Duration(seconds: 7), (timer) async {
     riderId ??= sharedPreferences.getInt('rider_id_cache');
 
     try {
@@ -88,6 +88,8 @@ void onStart(ServiceInstance service) async {
           "driver_id": riderId ?? '',
         }
       };
+
+      if (kDebugMode) print(riderId);
 
       socket.send(jsonEncode(params));
 

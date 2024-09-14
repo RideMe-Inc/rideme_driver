@@ -72,7 +72,7 @@ class DirectionsCard extends StatelessWidget {
                   ),
                   Space.width(context, 0.016),
                   SizedBox(
-                    width: Sizes.width(context, 0.6),
+                    width: Sizes.width(context, 0.55),
                     child: Text(
                       endLocation,
                       style: context.textTheme.displaySmall?.copyWith(

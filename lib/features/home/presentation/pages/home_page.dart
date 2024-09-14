@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> {
         CameraPosition(
             target: LatLng(position.latitude, position.longitude), zoom: 14.5),
       ));
+      locationListenerEvent();
     }
   }
 
@@ -105,6 +106,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     mapController.dispose();
+    // await location.onLocationChanged.drain();
     super.dispose();
   }
 
@@ -120,7 +122,7 @@ class _HomePageState extends State<HomePage> {
         bloc: permissionBloc,
         listener: (context, state) {
           if (state is LocationPemApproved) {
-            locationListenerEvent();
+            // locationListenerEvent();
           }
           // homeProvider.setNumberOfActiveTrips = user?.ongoingTrips?.length ?? 0;
           if (state is LocationPemDeclined) {
@@ -143,6 +145,8 @@ class _HomePageState extends State<HomePage> {
                 markers: {
                   Marker(
                     markerId: const MarkerId('rider_location'),
+                    anchor: const Offset(0.5, 0.5),
+
                     icon: homeProvider.customMarkerIcon,
                     position: LatLng(locationData?.latitude ?? 0,
                         locationData?.longitude ?? 0),

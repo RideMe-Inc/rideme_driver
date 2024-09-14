@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:rideme_driver/core/extensions/date_extension.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
@@ -32,6 +35,7 @@ import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
+import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
 
 part 'trips_event.dart';
 part 'trips_state.dart';
@@ -371,44 +375,6 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     return historyList;
   }
 
-  // //get order page tracking intent
-  // TrackingInfoNotice getSearchTrackInfo(
-  //   TrackingInfo? trackingInfo,
-  //   BuildContext context,
-  // ) {
-  //   switch (trackingInfo?.status ?? 'searching') {
-  //     case 'searching':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.checkingForCar,
-  //         subtitle: context.appLocalizations.checkingForCarInfo,
-  //       );
-
-  //     case 'driver-found':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.availableDriverFound,
-  //         subtitle: context.appLocalizations.availableDriverFoundInfo,
-  //       );
-
-  //     case 'driver-not-found':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.driverNotFound,
-  //         subtitle: context.appLocalizations.driverNotFoundInfo,
-  //       );
-
-  //     case 'driver-assigned':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.driverNotFound,
-  //         subtitle: context.appLocalizations.driverNotFoundInfo,
-  //       );
-
-  //     default:
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.checkingForCar,
-  //         subtitle: context.appLocalizations.checkingForCarInfo,
-  //       );
-  //   }
-  // }
-
   Future playAlertSound(String path) async {
     return await playSound.call(path);
   }
@@ -426,5 +392,124 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
           ? 'Going to stop '
           : 'Going to stop ${completedStopsCount + 1} ';
     }
+  }
+
+  //get distance between rider and user
+  Future<double> getDistanceFromLatLonInKm({
+    required LocationData currentLocation,
+    required LatLng endPoint,
+  }) async {
+    final stringgyDistance = convertToKM(
+      pickup:
+          LatLng(currentLocation.latitude ?? 0, currentLocation.longitude ?? 0),
+      dropOff: endPoint,
+    );
+
+    return double.parse(stringgyDistance);
+  }
+
+  String convertToKM({required LatLng pickup, required LatLng dropOff}) {
+    const radius = 6371; // Radius of the earth in km
+    final dLat = degToRad(pickup.latitude - dropOff.latitude); // degToRad below
+    final dLon = degToRad(pickup.longitude - dropOff.longitude);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(degToRad(dropOff.latitude)) *
+            cos(degToRad(pickup.latitude)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final distance = radius * c; // Distance in km
+
+    return distance.toStringAsFixed(2);
+  }
+
+  //degree to radians
+
+  double degToRad(deg) {
+    return (deg * pi) / 180;
+  }
+
+  Future<bool> reCallDirectionsApi(
+      {required BuildContext context,
+      required LocationData riderLocation}) async {
+    bool callGoogle = false;
+    List<LatLng> polyCoordinates = context.read<TripProvider>().polyCoordinates;
+
+    final latLngPosition =
+        LatLng(riderLocation.latitude!, riderLocation.longitude!);
+
+    if (polyCoordinates.length > 1) {
+      for (int i = 0; i < polyCoordinates.length; i++) {
+        final distanceKm1 = double.parse(
+            convertToKM(pickup: latLngPosition, dropOff: polyCoordinates[i]));
+        final distanceKm2 = double.parse(convertToKM(
+            pickup: latLngPosition, dropOff: polyCoordinates[i + 1]));
+
+        if (distanceKm1 > distanceKm2) {
+          //meaning he is on the right path
+
+          polyCoordinates.removeRange(i, i + 1);
+        } else {
+          //there is a deviation. check for upward adjustment
+
+          if (distanceKm1 > 0.03) {
+            callGoogle = true;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+
+    context.read<TripProvider>().updatePolyCoordinates = polyCoordinates;
+
+    if (!context.mounted) return false;
+
+    return callGoogle;
+  }
+
+  //UPDATE STEPS IF NEEDED
+
+  List<Steps> updateStepsIfNeeded(
+      {required List<Steps> currentSteps,
+      required List<LatLng> currentPolyline}) {
+    // print(currentPolyline);
+    // print(
+    //     '${currentSteps.first.endLocation?.lat} ${currentSteps.first.endLocation?.lng}');
+
+    List<Steps> holderSteps = currentSteps;
+
+    if (currentSteps.isEmpty) {
+      return currentSteps;
+    }
+
+    for (var step in holderSteps) {
+      if (currentPolyline.contains(LatLng(
+          double.parse(step.endLocation!.lat!.toStringAsFixed(5)),
+          double.parse(step.endLocation!.lng!.toStringAsFixed(5))))) {
+        return currentSteps;
+      } else {
+        currentSteps.remove(step);
+      }
+    }
+
+    return currentSteps;
+  }
+
+  //UPDATE DISTANCE
+  double updateDistanceOnActiveStep(
+      {required Steps currentStep, required LocationData riderLocation}) {
+    return double.parse(convertToKM(
+        pickup: LatLng(riderLocation.latitude!, riderLocation.longitude!),
+        dropOff: LatLng(
+            currentStep.endLocation!.lat!, currentStep.endLocation!.lng!)));
+  }
+
+  int returnHeading(int heading) {
+    if (heading < 0) {
+      return heading + 360;
+    }
+
+    return heading;
   }
 }

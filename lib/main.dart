@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
+import 'package:rideme_driver/background_services.dart';
 
 import 'package:rideme_driver/core/notifications/notif_handling.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
@@ -41,9 +42,8 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
-  //TODO: BACKGROUND SERVICE TO BE BROUGHT BACK
 
-  // await initializeService();
+  await initializeService();
 
   runApp(
     MultiProvider(

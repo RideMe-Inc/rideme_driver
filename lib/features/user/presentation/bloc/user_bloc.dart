@@ -266,6 +266,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   //login right navigation
   navigateRiderBasedOnProfileCompletion(
       DriverObject? driver, BuildContext context) {
+    print(driver?.extra?.ongoingTrips);
     if (driver == null) {
       context.goNamed('signup');
       return;
@@ -273,7 +274,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if ((driver.profile.hasLicense ?? false) &&
         (driver.profile.hasVehicle ?? false) &&
         (driver.profile.photoCheckRequired ?? true) != true) {
-      driver.extra != null
+      driver.extra != null && driver.extra!.ongoingTrips.isNotEmpty
           ? context.goNamed('trackTrip', queryParameters: {
               'tripId': driver.extra!.ongoingTrips.first.id.toString()
             })

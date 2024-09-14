@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as gl;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:rideme_driver/core/enums/directions_svg_enum.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
 import 'package:rideme_driver/core/widgets/buttons/generic_button_widget.dart';
 import 'package:rideme_driver/core/widgets/popups/error_popup.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
+import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
+import 'package:rideme_driver/features/trips/domain/entities/directions_object.dart'
+    as dob;
 import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
+import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
 import 'package:rideme_driver/features/trips/presentation/widgets/tracking/collapsed_info_widget.dart';
+import 'package:rideme_driver/features/trips/presentation/widgets/tracking/directions_card.dart';
 import 'package:rideme_driver/injection_container.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:html/parser.dart';
 
 class TrackTripPage extends StatefulWidget {
   final String tripId;
@@ -28,6 +36,17 @@ class TrackTripPage extends StatefulWidget {
 
 class _TrackTripPageState extends State<TrackTripPage> {
   final tripBloc = sl<TripsBloc>();
+  final tripBloc2 = sl<TripsBloc>();
+  late HomeProvider homeProvider;
+  late TripProvider tripProvider;
+  List<dob.Steps> directionSteps = [];
+  bool isAssigned = true;
+  List<String?> instructions = [];
+
+  LocationData? riderLocation;
+  double distanceToEndPoint = 0;
+  Location location = Location();
+
   TripTrackingDetails? tripTrackingDetails;
 
   fetchTripDetails() {
@@ -42,19 +61,88 @@ class _TrackTripPageState extends State<TrackTripPage> {
     tripBloc.add(GetTrackingDetailsEvent(params: params));
   }
 
+  callDirectionsApi(Map<String, dynamic> params) {
+    tripBloc2.add(GetDirectionsEvent(params: params));
+  }
+
+  //nasty line; should be looked at later
+
+  locationListenerEvent() async {
+    location.onLocationChanged.listen(
+      (event) async {
+        if (directionSteps.isNotEmpty) {
+          //UPDATE DISTANCE ON A PARTICULAR STEP
+
+          distanceToEndPoint = tripBloc.updateDistanceOnActiveStep(
+              currentStep: directionSteps.first, riderLocation: event);
+
+          //UPDATE DIRECTION STEP
+
+          directionSteps = tripBloc.updateStepsIfNeeded(
+            currentPolyline: tripProvider.polyCoordinates,
+            currentSteps: directionSteps,
+          );
+        }
+
+        riderLocation = event;
+
+        //UPDATE POLYLINE OF RIDER PATH
+
+        if (!mounted) return;
+
+        bool reCallDirectionApi = await tripBloc.reCallDirectionsApi(
+            context: context, riderLocation: event);
+
+        if (reCallDirectionApi) {
+          LatLng destination = isAssigned
+              ? LatLng(tripTrackingDetails?.pickupLat?.toDouble() ?? 0,
+                  tripTrackingDetails?.pickupLng?.toDouble() ?? 0)
+              : LatLng(tripTrackingDetails?.nextStop?.lat?.toDouble() ?? 0,
+                  tripTrackingDetails?.nextStop?.lng?.toDouble() ?? 0);
+          final params = {
+            "origin_heading":
+                tripBloc.returnHeading(event.heading?.toInt() ?? 0),
+            "origin_lat": event.latitude,
+            "origin_lng": event.longitude,
+            "destination_lat": destination.latitude,
+            "destination_lng": destination.longitude,
+          };
+
+          callDirectionsApi(params);
+        }
+
+        setState(() {});
+
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target: LatLng(
+                  riderLocation?.latitude ?? 0,
+                  riderLocation?.longitude ?? 0,
+                ),
+                bearing: riderLocation?.heading ?? 0,
+                zoom: 17),
+          ),
+        );
+      },
+    );
+  }
+
   late GoogleMapController mapController;
 
   void onMapCreated(GoogleMapController controller) async {
     mapController = controller;
 
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+    final position = await gl.Geolocator.getCurrentPosition(
+      desiredAccuracy: gl.LocationAccuracy.high,
     );
 
     mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
           target: LatLng(position.latitude, position.longitude), zoom: 14.5),
     ));
+
+    locationListenerEvent();
   }
 
   @override
@@ -65,40 +153,160 @@ class _TrackTripPageState extends State<TrackTripPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: tripBloc,
-      listener: (context, state) {
-        if (state is GetTrackingDetailsLoaded) {
-          setState(() {
-            tripTrackingDetails = state.tripInfo;
-          });
-        }
+    homeProvider = context.watch<HomeProvider>();
+    tripProvider = context.watch<TripProvider>();
 
-        if (state is GetTrackingDetailsError) {
-          showErrorPopUp(state.message, context);
-        }
-      },
+    isAssigned = (tripTrackingDetails?.status ?? 'assigned') == 'assigned';
+    return MultiBlocListener(
+      listeners: [
+        BlocListener(
+          bloc: tripBloc,
+          listener: (context, state) async {
+            if (state is GetTrackingDetailsLoaded) {
+              setState(() {
+                tripTrackingDetails = state.tripInfo;
+              });
+
+              LatLng destination = state.tripInfo.status == 'assigned'
+                  ? LatLng(state.tripInfo.pickupLat?.toDouble() ?? 0,
+                      state.tripInfo.pickupLng?.toDouble() ?? 0)
+                  : LatLng(state.tripInfo.nextStop?.lat?.toDouble() ?? 0,
+                      state.tripInfo.nextStop?.lng?.toDouble() ?? 0);
+
+              final position = await gl.Geolocator.getCurrentPosition(
+                desiredAccuracy: gl.LocationAccuracy.high,
+              );
+
+              final params = {
+                "origin_heading":
+                    tripBloc.returnHeading(position.heading.toInt()),
+                "origin_lat": position.latitude,
+                "origin_lng": position.longitude,
+                "destination_lat": destination.latitude,
+                "destination_lng": destination.longitude,
+              };
+
+              callDirectionsApi(params);
+            }
+
+            if (state is GetTrackingDetailsError) {
+              showErrorPopUp(state.message, context);
+            }
+          },
+        ),
+        BlocListener(
+          bloc: tripBloc2,
+          listener: (context, state) {
+            if (state is GetDirectionsLoaded) {
+              tripProvider.decodePolyline(
+                  state.directions.routes!.first.overviewPolyline!.points!);
+
+              directionSteps =
+                  state.directions.routes!.first.legs!.first.steps!;
+
+              instructions = directionSteps
+                  .map(
+                    (e) => e.htmlInstructions,
+                  )
+                  .toList();
+
+              //update steps
+              setState(() {});
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.grey,
         body: SlidingUpPanel(
           boxShadow: null,
-          minHeight: Sizes.height(context, 0.13),
+          minHeight: Sizes.height(context, 0.15),
           color: Colors.transparent,
-          body: SizedBox(
-            height: Sizes.height(context, 0.85),
-            child: GoogleMap(
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              mapType: MapType.terrain,
-              onMapCreated: onMapCreated,
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(
-                  0,
-                  0,
+          body: Stack(
+            children: [
+              SizedBox(
+                height: Sizes.height(context, 0.85),
+                child: GoogleMap(
+                  myLocationEnabled: false,
+                  myLocationButtonEnabled: false,
+                  mapType: MapType.terrain,
+                  onMapCreated: onMapCreated,
+                  polylines: {
+                    Polyline(
+                      polylineId: PolylineId('trip_line'),
+                      points: tripProvider.polyCoordinates,
+                      color: AppColors.rideMeBlueDark,
+                      width: 5,
+                    )
+                  },
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(
+                      0,
+                      0,
+                    ),
+                    zoom: 16,
+                  ),
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId('rider_location'),
+                      icon: homeProvider.customMarkerIcon,
+                      anchor: const Offset(0.5, 0.5),
+                      position: LatLng(riderLocation?.latitude ?? 0,
+                          riderLocation?.longitude ?? 0),
+                      // rotation: locationData?.heading ?? 0,
+                    ),
+                    if (tripProvider.polyCoordinates.isNotEmpty)
+                      Marker(
+                          markerId: const MarkerId('end_location'),
+                          icon: homeProvider.endIcon,
+                          anchor: const Offset(0.5, 0.5),
+                          position: LatLng(
+                              tripProvider.polyCoordinates.last.latitude,
+                              tripProvider.polyCoordinates.last.longitude))
+                  },
                 ),
-                zoom: 16,
               ),
-            ),
+
+              //DIRECTIONS CARD
+
+              if (directionSteps.isNotEmpty)
+                SafeArea(
+                    child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: EdgeInsets.all(Sizes.height(context, 0.02)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DirectionsCard(
+                          maneuverIcon: DirectionsSvgEnum.values
+                              .firstWhere(
+                                (element) =>
+                                    element.maneuver ==
+                                    directionSteps.first.maneuver,
+                                orElse: () =>
+                                    DirectionsSvgEnum.genericDirection,
+                              )
+                              .svg,
+                          //TODO: CONVERT HTML STRING TO NORMAL STRING
+                          // direction: directionSteps.first.htmlInstructions ?? '',
+                          direction:
+                              parse(directionSteps.first.htmlInstructions ?? '')
+                                      .body
+                                      ?.text ??
+                                  '',
+                          endLocation: isAssigned
+                              ? tripTrackingDetails?.pickupAddress ?? ''
+                              : tripTrackingDetails?.nextStop?.address ?? '',
+                          distance: distanceToEndPoint < 1
+                              ? '${distanceToEndPoint * 1000} m'
+                              : '$distanceToEndPoint km',
+                        ),
+                      ],
+                    ),
+                  ),
+                ))
+            ],
           ),
           panel: _PanelWidget(
             tripTrackingDetails: tripTrackingDetails,
@@ -123,7 +331,11 @@ class _TrackTripPageState extends State<TrackTripPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GenericButton(onTap: () {}, label: 'label', isActive: true),
+              GenericButton(
+                onTap: () {},
+                label: 'label',
+                isActive: true,
+              ),
             ],
           ),
         ),

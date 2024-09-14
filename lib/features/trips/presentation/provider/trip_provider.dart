@@ -79,6 +79,14 @@ class TripProvider extends ChangeNotifier {
 
     _polyLines = _polylinePoints.decodePolyline(polyline);
 
+    _polyCoordinates =
+        _polyLines.map((e) => LatLng(e.latitude, e.longitude)).toList();
+
+    notifyListeners();
+  }
+
+  set updatePolyCoordinates(List<LatLng> newPolyCord) {
+    _polyCoordinates = newPolyCord;
     notifyListeners();
   }
 
