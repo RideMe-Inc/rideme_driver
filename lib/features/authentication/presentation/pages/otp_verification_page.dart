@@ -124,7 +124,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           if (state is GetUserProfileLoaded) {
             //udpate provider with user data and navigate to home
             context.read<UserProvider>().updateUserInfo = state.driver.profile;
-            userBloc.cacheRiderID(state.driver.profile.id?.toInt() ?? 1);
+            userBloc.cacheRiderID(state.driver.profile.id!.toInt());
+
             userBloc.navigateRiderBasedOnProfileCompletion(
                 state.driver, context);
           }

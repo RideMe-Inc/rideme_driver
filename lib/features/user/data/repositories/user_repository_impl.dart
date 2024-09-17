@@ -30,6 +30,8 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       final response = await remoteDatasource.getUserProfile(params);
+
+      await localDatasource.cacheRiderId(response.profile.id!.toInt());
       return Right(response);
     } catch (e) {
       if (e is ErrorException) {
@@ -68,6 +70,7 @@ class UserRepositoryImpl implements UserRepository {
     if (await networkInfo.isConnected) {
       try {
         final response = await remoteDatasource.editProfile(params);
+        await localDatasource.cacheRiderId(response.id!.toInt());
 
         return Right(response);
       } catch (e) {

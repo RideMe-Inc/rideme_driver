@@ -95,6 +95,19 @@ Future handleNotification({
       if (!isTapped) showNotification(notification);
       break;
 
+    case 'trips/cancelled':
+      if (isTapped) showNotification(notification);
+
+      if (!isInForeground) {
+        if (context != null) {
+          context.goNamed(
+            'home',
+          );
+        }
+      }
+
+      break;
+
     case 'trips/ended':
 
       //TODO: COMPLETE ENDED USECASE

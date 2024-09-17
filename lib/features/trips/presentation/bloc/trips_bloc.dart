@@ -440,6 +440,9 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
     if (polyCoordinates.length > 1) {
       for (int i = 0; i < polyCoordinates.length; i++) {
+        if (i + 1 == polyCoordinates.length) {
+          return false;
+        }
         final distanceKm1 = double.parse(
             convertToKM(pickup: latLngPosition, dropOff: polyCoordinates[i]));
         final distanceKm2 = double.parse(convertToKM(
@@ -452,7 +455,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         } else {
           //there is a deviation. check for upward adjustment
 
-          if (distanceKm1 > 0.03) {
+          if (distanceKm1 > 0.05) {
             callGoogle = true;
           } else {
             break;
@@ -503,6 +506,22 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         pickup: LatLng(riderLocation.latitude!, riderLocation.longitude!),
         dropOff: LatLng(
             currentStep.endLocation!.lat!, currentStep.endLocation!.lng!)));
+  }
+
+  List<Steps> updateInstructionsIfNeeded(
+      {required List<Steps> currentInstructions,
+      required double distanceLeft}) {
+    if (currentInstructions.length <= 1) {
+      return currentInstructions;
+    }
+
+    if (distanceLeft < 0.11) {
+      currentInstructions.removeAt(0);
+
+      return currentInstructions;
+    }
+
+    return currentInstructions;
   }
 
   int returnHeading(int heading) {

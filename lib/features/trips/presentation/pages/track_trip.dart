@@ -17,6 +17,9 @@ import 'package:rideme_driver/features/trips/domain/entities/directions_object.d
 import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
+import 'package:rideme_driver/features/trips/presentation/widgets/my_location_section_widget.dart';
+import 'package:rideme_driver/features/trips/presentation/widgets/payment/payment_type_selection.dart';
+import 'package:rideme_driver/features/trips/presentation/widgets/payment_method_section_widget.dart';
 import 'package:rideme_driver/features/trips/presentation/widgets/tracking/collapsed_info_widget.dart';
 import 'package:rideme_driver/features/trips/presentation/widgets/tracking/directions_card.dart';
 import 'package:rideme_driver/injection_container.dart';
@@ -40,8 +43,8 @@ class _TrackTripPageState extends State<TrackTripPage> {
   late HomeProvider homeProvider;
   late TripProvider tripProvider;
   List<dob.Steps> directionSteps = [];
+  List<dob.Steps> instructions = [];
   bool isAssigned = true;
-  List<String?> instructions = [];
 
   LocationData? riderLocation;
   double distanceToEndPoint = 0;
@@ -82,6 +85,10 @@ class _TrackTripPageState extends State<TrackTripPage> {
             currentPolyline: tripProvider.polyCoordinates,
             currentSteps: directionSteps,
           );
+
+          instructions = tripBloc.updateInstructionsIfNeeded(
+              currentInstructions: instructions,
+              distanceLeft: distanceToEndPoint);
         }
 
         riderLocation = event;
@@ -201,15 +208,12 @@ class _TrackTripPageState extends State<TrackTripPage> {
               tripProvider.decodePolyline(
                   state.directions.routes!.first.overviewPolyline!.points!);
 
+              distanceToEndPoint = 0;
+
               directionSteps =
                   state.directions.routes!.first.legs!.first.steps!;
 
-              instructions = directionSteps
-                  .map(
-                    (e) => e.htmlInstructions,
-                  )
-                  .toList();
-
+              instructions = directionSteps;
               //update steps
               setState(() {});
             }
@@ -237,7 +241,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
                       points: tripProvider.polyCoordinates,
                       color: AppColors.rideMeBlueDark,
                       width: 5,
-                    )
+                    ),
                   },
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(
@@ -269,7 +273,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
 
               //DIRECTIONS CARD
 
-              if (directionSteps.isNotEmpty)
+              if (instructions.isNotEmpty)
                 SafeArea(
                     child: Align(
                   alignment: Alignment.topCenter,
@@ -283,15 +287,15 @@ class _TrackTripPageState extends State<TrackTripPage> {
                               .firstWhere(
                                 (element) =>
                                     element.maneuver ==
-                                    directionSteps.first.maneuver,
+                                    instructions.first.maneuver,
                                 orElse: () =>
                                     DirectionsSvgEnum.genericDirection,
                               )
                               .svg,
                           //TODO: CONVERT HTML STRING TO NORMAL STRING
-                          // direction: directionSteps.first.htmlInstructions ?? '',
+                          // direction: instructions.first.htmlInstructions ?? '',
                           direction:
-                              parse(directionSteps.first.htmlInstructions ?? '')
+                              parse(instructions.first.htmlInstructions ?? '')
                                       .body
                                       ?.text ??
                                   '',
@@ -392,7 +396,23 @@ class _PanelWidget extends StatelessWidget {
             endTime: '4',
             totalMin: '5',
             totalDistanceLeft: 20,
-          )
+          ),
+
+          Space.height(context, 0.022),
+          MyLocationSectionWidget(
+              pickUp: tripTrackingDetails?.pickupAddress ?? '',
+              dropOff: tripTrackingDetails?.nextStop?.address ?? ''),
+          Space.height(context, 0.03),
+          PaymentMethodSectionWidget(
+            paymentTypes: PaymentTypes.values.firstWhere(
+              (element) =>
+                  element.name ==
+                  (tripTrackingDetails?.paymentMethod ?? 'cash'),
+            ),
+            amount: tripTrackingDetails?.amountCharged ?? 0,
+            onEditTap: () {},
+          ),
+          Space.height(context, 0.042),
         ],
       ),
     );
