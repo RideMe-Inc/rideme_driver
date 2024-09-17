@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:rideme_driver/core/extensions/date_extension.dart';
@@ -430,13 +431,12 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   }
 
   Future<bool> reCallDirectionsApi(
-      {required BuildContext context,
-      required LocationData riderLocation}) async {
+      {required BuildContext context, required Position riderLocation}) async {
     bool callGoogle = false;
     List<LatLng> polyCoordinates = context.read<TripProvider>().polyCoordinates;
 
     final latLngPosition =
-        LatLng(riderLocation.latitude!, riderLocation.longitude!);
+        LatLng(riderLocation.latitude, riderLocation.longitude);
 
     if (polyCoordinates.length > 1) {
       for (int i = 0; i < polyCoordinates.length; i++) {
@@ -501,9 +501,9 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
   //UPDATE DISTANCE
   double updateDistanceOnActiveStep(
-      {required Steps currentStep, required LocationData riderLocation}) {
+      {required Steps currentStep, required Position riderLocation}) {
     return double.parse(convertToKM(
-        pickup: LatLng(riderLocation.latitude!, riderLocation.longitude!),
+        pickup: LatLng(riderLocation.latitude, riderLocation.longitude),
         dropOff: LatLng(
             currentStep.endLocation!.lat!, currentStep.endLocation!.lng!)));
   }

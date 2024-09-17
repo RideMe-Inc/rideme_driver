@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart' as gl;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:rideme_driver/core/enums/directions_svg_enum.dart';
+import 'package:rideme_driver/core/extensions/context_extensions.dart';
+import 'package:rideme_driver/core/mixins/url_launcher_mixin.dart';
 import 'package:rideme_driver/core/size/sizes.dart';
 import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
@@ -22,6 +26,7 @@ import 'package:rideme_driver/features/trips/presentation/widgets/payment/paymen
 import 'package:rideme_driver/features/trips/presentation/widgets/payment_method_section_widget.dart';
 import 'package:rideme_driver/features/trips/presentation/widgets/tracking/collapsed_info_widget.dart';
 import 'package:rideme_driver/features/trips/presentation/widgets/tracking/directions_card.dart';
+import 'package:rideme_driver/features/trips/presentation/widgets/tracking/tracking_info_tile_widget.dart';
 import 'package:rideme_driver/injection_container.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:html/parser.dart';
@@ -45,12 +50,15 @@ class _TrackTripPageState extends State<TrackTripPage> {
   List<dob.Steps> directionSteps = [];
   List<dob.Steps> instructions = [];
   bool isAssigned = true;
+  String? totalDistance, totalDuration;
 
-  LocationData? riderLocation;
+  gl.Position? riderLocation;
   double distanceToEndPoint = 0;
   Location location = Location();
 
   TripTrackingDetails? tripTrackingDetails;
+
+  StreamSubscription<gl.Position>? _positionStreamSubscription;
 
   fetchTripDetails() {
     final params = {
@@ -68,59 +76,79 @@ class _TrackTripPageState extends State<TrackTripPage> {
     tripBloc2.add(GetDirectionsEvent(params: params));
   }
 
-  //nasty line; should be looked at later
+  GoogleMapController? mapController;
 
-  locationListenerEvent() async {
-    location.onLocationChanged.listen(
-      (event) async {
-        if (directionSteps.isNotEmpty) {
-          //UPDATE DISTANCE ON A PARTICULAR STEP
+  void onMapCreated(GoogleMapController controller) async {
+    mapController = controller;
 
-          distanceToEndPoint = tripBloc.updateDistanceOnActiveStep(
-              currentStep: directionSteps.first, riderLocation: event);
+    final position = await gl.Geolocator.getCurrentPosition(
+      desiredAccuracy: gl.LocationAccuracy.high,
+    );
 
-          //UPDATE DIRECTION STEP
+    mapController!.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+          target: LatLng(position.latitude, position.longitude), zoom: 14.5),
+    ));
 
-          directionSteps = tripBloc.updateStepsIfNeeded(
-            currentPolyline: tripProvider.polyCoordinates,
-            currentSteps: directionSteps,
-          );
+    // locationListenerEvent();
+  }
 
-          instructions = tripBloc.updateInstructionsIfNeeded(
-              currentInstructions: instructions,
-              distanceLeft: distanceToEndPoint);
-        }
+  @override
+  void initState() {
+    fetchTripDetails();
+    // Start listening to location changes
+    _positionStreamSubscription =
+        gl.Geolocator.getPositionStream().listen((gl.Position position) async {
+      print(position);
 
-        riderLocation = event;
+      if (directionSteps.isNotEmpty) {
+        //UPDATE DISTANCE ON A PARTICULAR STEP
 
-        //UPDATE POLYLINE OF RIDER PATH
+        distanceToEndPoint = tripBloc.updateDistanceOnActiveStep(
+            currentStep: directionSteps.first, riderLocation: position);
 
-        if (!mounted) return;
+        //UPDATE DIRECTION STEP
 
-        bool reCallDirectionApi = await tripBloc.reCallDirectionsApi(
-            context: context, riderLocation: event);
+        directionSteps = tripBloc.updateStepsIfNeeded(
+          currentPolyline: tripProvider.polyCoordinates,
+          currentSteps: directionSteps,
+        );
 
-        if (reCallDirectionApi) {
-          LatLng destination = isAssigned
-              ? LatLng(tripTrackingDetails?.pickupLat?.toDouble() ?? 0,
-                  tripTrackingDetails?.pickupLng?.toDouble() ?? 0)
-              : LatLng(tripTrackingDetails?.nextStop?.lat?.toDouble() ?? 0,
-                  tripTrackingDetails?.nextStop?.lng?.toDouble() ?? 0);
-          final params = {
-            "origin_heading":
-                tripBloc.returnHeading(event.heading?.toInt() ?? 0),
-            "origin_lat": event.latitude,
-            "origin_lng": event.longitude,
-            "destination_lat": destination.latitude,
-            "destination_lng": destination.longitude,
-          };
+        instructions = tripBloc.updateInstructionsIfNeeded(
+            currentInstructions: instructions,
+            distanceLeft: distanceToEndPoint);
+      }
 
-          callDirectionsApi(params);
-        }
+      riderLocation = position;
 
-        setState(() {});
+      //UPDATE POLYLINE OF RIDER PATH
 
-        mapController.animateCamera(
+      if (!mounted) return;
+
+      bool reCallDirectionApi = await tripBloc.reCallDirectionsApi(
+          context: context, riderLocation: position);
+
+      if (reCallDirectionApi) {
+        LatLng destination = isAssigned
+            ? LatLng(tripTrackingDetails?.pickupLat?.toDouble() ?? 0,
+                tripTrackingDetails?.pickupLng?.toDouble() ?? 0)
+            : LatLng(tripTrackingDetails?.nextStop?.lat?.toDouble() ?? 0,
+                tripTrackingDetails?.nextStop?.lng?.toDouble() ?? 0);
+        final params = {
+          "origin_heading": tripBloc.returnHeading(position.heading.toInt()),
+          "origin_lat": position.latitude,
+          "origin_lng": position.longitude,
+          "destination_lat": destination.latitude,
+          "destination_lng": destination.longitude,
+        };
+
+        callDirectionsApi(params);
+      }
+
+      setState(() {});
+
+      if (mapController != null) {
+        mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
                 target: LatLng(
@@ -131,31 +159,15 @@ class _TrackTripPageState extends State<TrackTripPage> {
                 zoom: 17),
           ),
         );
-      },
-    );
-  }
-
-  late GoogleMapController mapController;
-
-  void onMapCreated(GoogleMapController controller) async {
-    mapController = controller;
-
-    final position = await gl.Geolocator.getCurrentPosition(
-      desiredAccuracy: gl.LocationAccuracy.high,
-    );
-
-    mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-          target: LatLng(position.latitude, position.longitude), zoom: 14.5),
-    ));
-
-    locationListenerEvent();
+      }
+    });
+    super.initState();
   }
 
   @override
-  void initState() {
-    fetchTripDetails();
-    super.initState();
+  void dispose() {
+    _positionStreamSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -180,15 +192,11 @@ class _TrackTripPageState extends State<TrackTripPage> {
                   : LatLng(state.tripInfo.nextStop?.lat?.toDouble() ?? 0,
                       state.tripInfo.nextStop?.lng?.toDouble() ?? 0);
 
-              final position = await gl.Geolocator.getCurrentPosition(
-                desiredAccuracy: gl.LocationAccuracy.high,
-              );
-
               final params = {
                 "origin_heading":
-                    tripBloc.returnHeading(position.heading.toInt()),
-                "origin_lat": position.latitude,
-                "origin_lng": position.longitude,
+                    tripBloc.returnHeading(riderLocation?.heading.toInt() ?? 0),
+                "origin_lat": riderLocation?.latitude,
+                "origin_lng": riderLocation?.longitude,
                 "destination_lat": destination.latitude,
                 "destination_lng": destination.longitude,
               };
@@ -214,6 +222,11 @@ class _TrackTripPageState extends State<TrackTripPage> {
                   state.directions.routes!.first.legs!.first.steps!;
 
               instructions = directionSteps;
+
+              totalDistance =
+                  state.directions.routes?.first.legs?.first.distance?.text;
+              totalDuration =
+                  state.directions.routes?.first.legs?.first.duration?.text;
               //update steps
               setState(() {});
             }
@@ -224,7 +237,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
         backgroundColor: Colors.grey,
         body: SlidingUpPanel(
           boxShadow: null,
-          minHeight: Sizes.height(context, 0.15),
+          minHeight: Sizes.height(context, 0.13),
           color: Colors.transparent,
           body: Stack(
             children: [
@@ -237,17 +250,14 @@ class _TrackTripPageState extends State<TrackTripPage> {
                   onMapCreated: onMapCreated,
                   polylines: {
                     Polyline(
-                      polylineId: PolylineId('trip_line'),
+                      polylineId: const PolylineId('trip_line'),
                       points: tripProvider.polyCoordinates,
                       color: AppColors.rideMeBlueDark,
                       width: 5,
                     ),
                   },
                   initialCameraPosition: const CameraPosition(
-                    target: LatLng(
-                      0,
-                      0,
-                    ),
+                    target: LatLng(44.9706674, -93.3438785),
                     zoom: 16,
                   ),
                   markers: {
@@ -292,8 +302,6 @@ class _TrackTripPageState extends State<TrackTripPage> {
                                     DirectionsSvgEnum.genericDirection,
                               )
                               .svg,
-                          //TODO: CONVERT HTML STRING TO NORMAL STRING
-                          // direction: instructions.first.htmlInstructions ?? '',
                           direction:
                               parse(instructions.first.htmlInstructions ?? '')
                                       .body
@@ -314,8 +322,12 @@ class _TrackTripPageState extends State<TrackTripPage> {
           ),
           panel: _PanelWidget(
             tripTrackingDetails: tripTrackingDetails,
+            distance: totalDistance,
+            duration: totalDuration,
           ),
           collapsed: _CollapsedWidget(
+            distance: totalDistance,
+            duration: totalDuration,
             user: tripTrackingDetails?.user,
             status: tripTrackingDetails?.status,
             arrivedAt: tripTrackingDetails?.arrivedAt,
@@ -349,9 +361,14 @@ class _TrackTripPageState extends State<TrackTripPage> {
 }
 
 //!PANEL WIDGET
-class _PanelWidget extends StatelessWidget {
+class _PanelWidget extends StatelessWidget with UrlLauncherMixin {
   final TripTrackingDetails? tripTrackingDetails;
-  const _PanelWidget({required this.tripTrackingDetails});
+  final String? distance, duration;
+  const _PanelWidget({
+    required this.tripTrackingDetails,
+    required this.distance,
+    required this.duration,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -366,6 +383,7 @@ class _PanelWidget extends StatelessWidget {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Space.height(context, 0.01),
           Center(
@@ -391,28 +409,85 @@ class _PanelWidget extends StatelessWidget {
                 tripTrackingDetails?.completedStopsCount?.toInt(),
             totalStops: tripTrackingDetails?.totalStops?.toInt(),
             user: tripTrackingDetails?.user,
+            onCallTap: () =>
+                launchCallUrl(tripTrackingDetails?.user.phone ?? ''),
 
             //TODO: THIS WILL COME FROM THE MAP DIRECTION API
             endTime: '4',
-            totalMin: '5',
-            totalDistanceLeft: 20,
+            totalMin: duration,
+            totalDistanceLeft: distance,
           ),
 
           Space.height(context, 0.022),
-          MyLocationSectionWidget(
-              pickUp: tripTrackingDetails?.pickupAddress ?? '',
-              dropOff: tripTrackingDetails?.nextStop?.address ?? ''),
-          Space.height(context, 0.03),
-          PaymentMethodSectionWidget(
-            paymentTypes: PaymentTypes.values.firstWhere(
-              (element) =>
-                  element.name ==
-                  (tripTrackingDetails?.paymentMethod ?? 'cash'),
+
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //TRIP INFORMATION
+
+                  Text(
+                    context.appLocalizations.tripInformation,
+                    style: context.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.rideMeGreyDarkActive,
+                    ),
+                  ),
+                  Space.height(context, 0.008),
+
+                  MyLocationSectionWidget(
+                    pickUp: tripTrackingDetails?.pickupAddress ?? '',
+                    dropOff: tripTrackingDetails?.nextStop?.address ?? '',
+                    onCancelTap: (tripTrackingDetails?.status ?? 'assigned') ==
+                            'assigned'
+                        ? () {
+                            //TODO: CANCEL LOGIC GOES HERE
+                          }
+                        : null,
+                  ),
+
+                  //CUSTOMER PREFERENCES
+                  Text(
+                    context.appLocalizations.customerPreferences,
+                    style: context.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.rideMeGreyDarkActive,
+                    ),
+                  ),
+                  Space.height(context, 0.008),
+
+                  TrackingInfoTileWidget(
+                    label: context.appLocalizations.temperature,
+                    value: tripTrackingDetails?.temperature?.toString(),
+                  ),
+                  TrackingInfoTileWidget(
+                    label: context.appLocalizations.music,
+                    value: tripTrackingDetails?.music?.toString(),
+                  ),
+                  TrackingInfoTileWidget(
+                    label: context.appLocalizations.conversation,
+                    value: tripTrackingDetails?.conversation?.toString(),
+                  ),
+
+                  const Divider(
+                    color: AppColors.rideMeGreyLightActive,
+                  ),
+
+                  Space.height(context, 0.015),
+                  PaymentMethodSectionWidget(
+                    paymentTypes: PaymentTypes.values.firstWhere(
+                      (element) =>
+                          element.name ==
+                          (tripTrackingDetails?.paymentMethod ?? 'cash'),
+                    ),
+                    amount: tripTrackingDetails?.amountCharged ?? 0,
+                  ),
+                  Space.height(context, 0.02),
+                ],
+              ),
             ),
-            amount: tripTrackingDetails?.amountCharged ?? 0,
-            onEditTap: () {},
           ),
-          Space.height(context, 0.042),
         ],
       ),
     );
@@ -420,17 +495,22 @@ class _PanelWidget extends StatelessWidget {
 }
 
 //!COLLAPSED WIDGET
-class _CollapsedWidget extends StatelessWidget {
-  const _CollapsedWidget(
-      {required this.user,
-      required this.status,
-      required this.arrivedAt,
-      required this.completedStopsCount,
-      required this.totalStops});
+class _CollapsedWidget extends StatelessWidget with UrlLauncherMixin {
+  const _CollapsedWidget({
+    required this.user,
+    required this.status,
+    required this.arrivedAt,
+    required this.completedStopsCount,
+    required this.totalStops,
+    required this.distance,
+    required this.duration,
+  });
   final RiderInfo? user;
   final String? status;
   final String? arrivedAt;
   final int? completedStopsCount, totalStops;
+
+  final String? distance, duration;
 
   @override
   Widget build(BuildContext context) {
@@ -469,11 +549,12 @@ class _CollapsedWidget extends StatelessWidget {
             completedStopsCount: completedStopsCount,
             totalStops: totalStops,
             user: user,
+            onCallTap: () => launchCallUrl(user?.phone ?? ''),
 
-            //TODO: THIS WILL COME FROM THE MAP DIRECTION API
+            //TODO: WORK ON WAITING TIME
             endTime: '4',
-            totalMin: '5',
-            totalDistanceLeft: 20,
+            totalMin: duration,
+            totalDistanceLeft: distance,
           )
         ],
       ),

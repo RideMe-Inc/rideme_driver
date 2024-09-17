@@ -13,19 +13,20 @@ class CollapseInfoWidget extends StatelessWidget {
   final RiderInfo? user;
   final String? status, arrivedAt, endTime, totalMin;
   final int? completedStopsCount, totalStops;
-  final num? totalDistanceLeft;
+  final String? totalDistanceLeft;
+  final VoidCallback? onCallTap;
 
-  const CollapseInfoWidget({
-    super.key,
-    required this.status,
-    required this.arrivedAt,
-    required this.completedStopsCount,
-    required this.totalStops,
-    required this.user,
-    required this.endTime,
-    required this.totalMin,
-    required this.totalDistanceLeft,
-  });
+  const CollapseInfoWidget(
+      {super.key,
+      required this.status,
+      required this.arrivedAt,
+      required this.completedStopsCount,
+      required this.totalStops,
+      required this.user,
+      required this.endTime,
+      required this.totalMin,
+      required this.totalDistanceLeft,
+      required this.onCallTap});
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +50,8 @@ class CollapseInfoWidget extends StatelessWidget {
                     userName: user?.name ?? '',
                     rating: user?.rating?.toString() ?? '0')
                 : _OngoingInfoWidget(
-                    min: totalMin!,
-                    distance: totalDistanceLeft?.toString() ?? '0',
+                    min: totalMin,
+                    distance: totalDistanceLeft?.toString() ?? '---',
                     totalStops: totalStops ?? 1,
                     completedStopsCount: completedStopsCount ?? 0,
                     userName: user?.name ?? '',
@@ -58,16 +59,19 @@ class CollapseInfoWidget extends StatelessWidget {
                     status: status ?? 'assigned',
                     arrivedAt: arrivedAt,
                   ),
-            Container(
-              height: Sizes.height(context, 0.04),
-              width: Sizes.height(context, 0.04),
-              decoration: const BoxDecoration(
-                color: AppColors.rideMeGreyNormal,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  SvgNameConstants.phoneSVG,
+            GestureDetector(
+              onTap: onCallTap,
+              child: Container(
+                height: Sizes.height(context, 0.04),
+                width: Sizes.height(context, 0.04),
+                decoration: const BoxDecoration(
+                  color: AppColors.rideMeGreyNormal,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    SvgNameConstants.phoneSVG,
+                  ),
                 ),
               ),
             )
@@ -83,7 +87,7 @@ class CollapseInfoWidget extends StatelessWidget {
 }
 
 class _OngoingInfoWidget extends StatelessWidget {
-  final String min, distance, userName, rating, status;
+  final String? min, distance, userName, rating, status;
   final String? arrivedAt;
 
   final int totalStops, completedStopsCount;
@@ -113,7 +117,8 @@ class _OngoingInfoWidget extends StatelessWidget {
               ),
               Space.width(context, 0.024),
               Text(
-                context.appLocalizations.minAndDistanceLeft(min, distance),
+                context.appLocalizations
+                    .minAndDistanceLeft(min ?? '---', distance ?? '---'),
                 style: context.textTheme.displayMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -136,13 +141,13 @@ class _OngoingInfoWidget extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      userName,
+                      userName ?? '---',
                       style: context.textTheme.displaySmall
                           ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Space.width(context, 0.012),
                     Text(
-                      rating,
+                      rating ?? '0',
                       style: context.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: AppColors.rideMeGreyDarker,

@@ -473,7 +473,11 @@
 "initialAmount":"Montant initial",
 "userDetails":"Détails de l'utilisateur",
 "update":"Mise à jour",
-"minAndDistanceLeft":"{min} min away ({distance} km)"
+"minAndDistanceLeft":"{min} away ({distance})",
+
+"tripInformation":"Informations sur le trajet"
+
+
 
 
 }

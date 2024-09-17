@@ -7,15 +7,12 @@ import 'package:rideme_driver/features/trips/presentation/widgets/payment/paymen
 
 class PaymentMethodSectionWidget extends StatelessWidget {
   final PaymentTypes paymentTypes;
-  final VoidCallback onEditTap;
+
   final num amount;
-  final bool? editable;
   const PaymentMethodSectionWidget({
     super.key,
     required this.paymentTypes,
     required this.amount,
-    required this.onEditTap,
-    this.editable = true,
   });
 
   @override
@@ -24,27 +21,12 @@ class PaymentMethodSectionWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //header
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              context.appLocalizations.paymentMethod,
-              style: context.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (editable!)
-              GestureDetector(
-                onTap: onEditTap,
-                child: Text(
-                  'Edit',
-                  style: context.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.rideMeBlueNormal,
-                  ),
-                ),
-              )
-          ],
+        Text(
+          context.appLocalizations.paymentMethod,
+          style: context.textTheme.displaySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.rideMeGreyDarkActive,
+          ),
         ),
 
         Space.height(context, 0.02),

@@ -60,4 +60,5 @@ class SvgNameConstants {
   static const uTurnRight = '$_baseUrl/u_turn_right.svg';
   static const locationPin = '$_baseUrl/location_pin.svg';
   static const trackingLocationPin = '$_baseUrl/tracking_location_pin.svg';
+  static const cancelTrip = '$_baseUrl/cancel_trip.svg';
 }

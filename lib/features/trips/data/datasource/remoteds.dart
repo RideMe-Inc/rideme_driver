@@ -175,11 +175,11 @@ class TripRemoteDataSourceImpl
   @override
   Future<DirectionsObjectModel> getDirections(
       Map<String, dynamic> params) async {
+    print(params);
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/directions/json?origin=heading=${params['origin_heading']}:${params['origin_lat']},${params['origin_lng']}&destination=${params['destination_lat']},${params['destination_lng']}&key=AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ',
     );
 
-    print(url);
     final response = await client.get(url);
 
     print(response.body);

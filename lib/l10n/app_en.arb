@@ -453,6 +453,8 @@
   "tripCancelInfo":"Please select reason for cancelling your trip",
   "userDetails":"User Details",
   "update":"Update",
+  "tripInformation":"Trip information",
+
 
 
 
@@ -460,7 +462,7 @@
   
   
   
-  "minAndDistanceLeft":"{min} min away ({distance} km)",
+  "minAndDistanceLeft":"{min} away ({distance})",
   "@minAndDistanceLeft":{
     "placeholders":{
       "min":{
