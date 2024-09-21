@@ -508,18 +508,18 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
             currentStep.endLocation!.lat!, currentStep.endLocation!.lng!)));
   }
 
-  List<Steps> updateInstructionsIfNeeded(
-      {required List<Steps> currentInstructions,
-      required double distanceLeft}) {
-    if (currentInstructions.length <= 1) {
+  List<Steps> updateInstructionsIfNeeded({
+    required List<Steps> currentInstructions,
+    required double distanceLeft,
+    required int distanceStepsLength,
+  }) {
+    if ((currentInstructions.length <= 1) ||
+        (distanceLeft > 0.11) ||
+        (currentInstructions.length < distanceStepsLength)) {
       return currentInstructions;
     }
 
-    if (distanceLeft < 0.11) {
-      currentInstructions.removeAt(0);
-
-      return currentInstructions;
-    }
+    currentInstructions.removeAt(0);
 
     return currentInstructions;
   }

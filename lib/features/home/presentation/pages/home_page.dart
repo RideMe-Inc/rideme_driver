@@ -25,6 +25,7 @@ import 'package:rideme_driver/features/home/presentation/widgets/on_off_widget.d
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
 import 'package:rideme_driver/features/user/presentation/provider/user_provider.dart';
 import 'package:rideme_driver/injection_container.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -93,6 +94,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    WakelockPlus.enable();
+
     permissionBloc.add(RequestLocationPemEvent());
 
     PushNotificationHandler(
@@ -106,6 +109,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     mapController.dispose();
+    WakelockPlus.disable();
+
     // await location.onLocationChanged.drain();
     super.dispose();
   }

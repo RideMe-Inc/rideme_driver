@@ -30,6 +30,7 @@ import 'package:rideme_driver/features/trips/presentation/widgets/tracking/track
 import 'package:rideme_driver/injection_container.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:html/parser.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class TrackTripPage extends StatefulWidget {
   final String tripId;
@@ -95,28 +96,29 @@ class _TrackTripPageState extends State<TrackTripPage> {
 
   @override
   void initState() {
+    WakelockPlus.enable();
+
     fetchTripDetails();
     // Start listening to location changes
     _positionStreamSubscription =
         gl.Geolocator.getPositionStream().listen((gl.Position position) async {
-      print(position);
-
       if (directionSteps.isNotEmpty) {
-        //UPDATE DISTANCE ON A PARTICULAR STEP
-
-        distanceToEndPoint = tripBloc.updateDistanceOnActiveStep(
-            currentStep: directionSteps.first, riderLocation: position);
-
         //UPDATE DIRECTION STEP
 
         directionSteps = tripBloc.updateStepsIfNeeded(
           currentPolyline: tripProvider.polyCoordinates,
           currentSteps: directionSteps,
         );
+        //UPDATE DISTANCE ON A PARTICULAR STEP
+
+        distanceToEndPoint = tripBloc.updateDistanceOnActiveStep(
+            currentStep: directionSteps.first, riderLocation: position);
 
         instructions = tripBloc.updateInstructionsIfNeeded(
-            currentInstructions: instructions,
-            distanceLeft: distanceToEndPoint);
+          currentInstructions: instructions,
+          distanceLeft: distanceToEndPoint,
+          distanceStepsLength: directionSteps.length,
+        );
       }
 
       riderLocation = position;
@@ -167,6 +169,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
   @override
   void dispose() {
     _positionStreamSubscription?.cancel();
+    WakelockPlus.disable();
     super.dispose();
   }
 

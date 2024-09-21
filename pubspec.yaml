@@ -88,6 +88,7 @@ dependencies:
   audioplayers: ^5.2.1
   sliding_up_panel: ^2.0.0+1
   html: ^0.15.4
+  wakelock_plus: ^1.2.8
 
 dev_dependencies:
   flutter_test:
