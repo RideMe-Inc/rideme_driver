@@ -30,11 +30,13 @@ import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_detail
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
 
@@ -53,6 +55,8 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   final GetTripStatus getTripStatus;
   final PlaySound playSound;
   final StopSound stopSound;
+  final PlayDirectionSound playDirectionSound;
+  final StopDirectionPlaySound stopDirectionPlaySound;
   final GetDirections getDirections;
   final GetTrackingDetails getTrackingDetails;
   final RiderTripDestinationActions riderTripDestinationActions;
@@ -70,6 +74,8 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required this.getTrackingDetails,
     required this.riderTripDestinationActions,
     required this.getDirections,
+    required this.playDirectionSound,
+    required this.stopDirectionPlaySound,
   }) : super(TripsInitial()) {
     //! CANCEL TRIP
 
@@ -384,6 +390,14 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     return await stopSound.call();
   }
 
+  Future playHtmlInstructionSound({required String instruction}) async {
+    return await playDirectionSound.call(instruction);
+  }
+
+  Future stopHtmlInstructionSound() async {
+    return await stopDirectionPlaySound.call();
+  }
+
   String dropOffString(
       {required int totalStops, required int completedStopsCount}) {
     if (totalStops - completedStopsCount == 1) {
@@ -455,7 +469,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         } else {
           //there is a deviation. check for upward adjustment
 
-          if (distanceKm1 > 0.05) {
+          if (distanceKm1 > 0.02) {
             callGoogle = true;
           } else {
             break;
@@ -493,6 +507,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         return currentSteps;
       } else {
         currentSteps.remove(step);
+        return currentSteps;
       }
     }
 
@@ -512,9 +527,17 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required List<Steps> currentInstructions,
     required double distanceLeft,
     required int distanceStepsLength,
+    required double totalCurrentDistanceOnStep,
   }) {
+    double temporalChecker = 0.8 * totalCurrentDistanceOnStep;
+
+    if (temporalChecker > 0.1) {
+      temporalChecker = 0.1;
+      //0.1 is 100 meters
+    }
+
     if ((currentInstructions.length <= 1) ||
-        (distanceLeft > 0.11) ||
+        (distanceLeft > temporalChecker) ||
         (currentInstructions.length < distanceStepsLength)) {
       return currentInstructions;
     }

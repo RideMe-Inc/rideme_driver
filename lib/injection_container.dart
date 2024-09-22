@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
@@ -158,6 +159,19 @@ init() async {
 
   //audio player
   sl.registerLazySingleton(() => AudioPlayer());
+
+  //tts
+  FlutterTts flutterTts = FlutterTts();
+
+  sl.registerLazySingleton(
+    () async {
+      await flutterTts.setSharedInstance(true);
+      await flutterTts.setSpeechRate(0.4);
+      await flutterTts.awaitSpeakCompletion(true);
+
+      return flutterTts;
+    },
+  );
 
   //socket
   sl.registerLazySingleton<WebSocket>(() {
@@ -562,6 +576,8 @@ initTrips() {
       getTrackingDetails: sl(),
       riderTripDestinationActions: sl(),
       getDirections: sl(),
+      playDirectionSound: sl(),
+      stopDirectionPlaySound: sl(),
     ),
   );
 
@@ -654,6 +670,6 @@ initTrips() {
   );
 
   sl.registerLazySingleton<TripsLocalDatasource>(
-    () => TripsLocalDatasourceImpl(player: sl()),
+    () => TripsLocalDatasourceImpl(player: sl(), flutterTts: sl()),
   );
 }

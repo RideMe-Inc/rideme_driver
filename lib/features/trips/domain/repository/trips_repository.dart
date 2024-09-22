@@ -38,4 +38,10 @@ abstract class TripsRepository {
   //GET DIRECTIONS
   Future<Either<String, DirectionsObject>> getDirections(
       Map<String, dynamic> params);
+
+  //play direction sound
+  Future playDirectionSound(String instruction);
+
+  //stop play direction sound
+  Future stopDirectionPlaySound();
 }

@@ -211,4 +211,18 @@ class TripsRepositoryImpl implements TripsRepository {
       return Left(networkInfo.noNetowrkMessage);
     }
   }
+
+  //PLAY DIRECTION SOUND
+
+  @override
+  Future playDirectionSound(String instruction) async {
+    return await localDatasource.playDirectionSound(instruction: instruction);
+  }
+
+  //STOP DIRECTION PLAY SOUND
+
+  @override
+  Future stopDirectionPlaySound() async {
+    return await localDatasource.stopDirectionPlaySound();
+  }
 }

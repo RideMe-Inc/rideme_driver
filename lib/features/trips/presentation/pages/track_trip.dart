@@ -115,10 +115,11 @@ class _TrackTripPageState extends State<TrackTripPage> {
             currentStep: directionSteps.first, riderLocation: position);
 
         instructions = tripBloc.updateInstructionsIfNeeded(
-          currentInstructions: instructions,
-          distanceLeft: distanceToEndPoint,
-          distanceStepsLength: directionSteps.length,
-        );
+            currentInstructions: instructions,
+            distanceLeft: distanceToEndPoint,
+            distanceStepsLength: directionSteps.length,
+            totalCurrentDistanceOnStep:
+                (directionSteps.first.distance!.value! / 1000));
       }
 
       riderLocation = position;
@@ -240,7 +241,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
         backgroundColor: Colors.grey,
         body: SlidingUpPanel(
           boxShadow: null,
-          minHeight: Sizes.height(context, 0.13),
+          minHeight: Sizes.height(context, 0.15),
           color: Colors.transparent,
           body: Stack(
             children: [
