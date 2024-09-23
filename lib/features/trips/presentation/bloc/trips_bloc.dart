@@ -475,7 +475,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         } else {
           //there is a deviation. check for upward adjustment
 
-          if (distanceKm1 > 0.02) {
+          if (distanceKm1 > 0.05) {
             callGoogle = true;
           } else {
             break;
