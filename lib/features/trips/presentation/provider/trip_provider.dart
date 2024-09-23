@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rideme_driver/features/trips/domain/entities/trip_tracking_details.dart';
 
 class TripProvider extends ChangeNotifier {
   int _index = 0;
@@ -11,9 +12,12 @@ class TripProvider extends ChangeNotifier {
   bool _notRun = true;
   bool _isPickup = false;
   bool _isGeoLoading = false;
+  bool _resetDirectionsViaDriverActions = false;
+  bool _finalInstructionSoundPlay = true;
   Marker? _realMarker;
   bool _initialCameraMove = false;
   int? _timeToArrival;
+  TripTrackingDetails? _tripTrackingDetails;
 
   final _polylinePoints = PolylinePoints();
   List<PointLatLng> _polyLines = [];
@@ -27,10 +31,29 @@ class TripProvider extends ChangeNotifier {
   List<LatLng> get polyCoordinates => _polyCoordinates;
   bool get isPickup => _isPickup;
   bool get isGeoLoading => _isGeoLoading;
+  bool get finalInstructionSoundPlay => _finalInstructionSoundPlay;
+  bool get resetDirectionsViaDriverActions => _resetDirectionsViaDriverActions;
+
   int get index => _index;
   int get rating => _rating;
+  TripTrackingDetails? get tripTrackingDetails => _tripTrackingDetails;
 
   //set
+
+  set updateResetDirectionsViaDriverActions(bool value) {
+    _resetDirectionsViaDriverActions = value;
+    notifyListeners();
+  }
+
+  set updateTripTrackingDetails(TripTrackingDetails value) {
+    _tripTrackingDetails = value;
+    notifyListeners();
+  }
+
+  set updateFinalInstructionSoundPlay(bool value) {
+    _finalInstructionSoundPlay = value;
+    notifyListeners();
+  }
 
   set updateInitialCameraMove(bool value) {
     _initialCameraMove = value;

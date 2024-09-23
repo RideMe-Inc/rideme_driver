@@ -76,20 +76,20 @@ Future handleNotification({
 
       break;
 
-    case 'trips/assigned' || 'trips/started' || 'trips/updated':
-      if (!isTapped) showNotification(notification);
-      if (!isInForeground) {
-        if (context != null) {
-          context.goNamed(
-            'trackTrip',
-            queryParameters: {
-              "tripId": message.data['trip_id'],
-            },
-          );
-        }
-      }
+    // case 'trips/assigned' || 'trips/started' || 'trips/updated':
+    //   if (!isTapped) showNotification(notification);
+    //   if (!isInForeground) {
+    //     if (context != null) {
+    //       context.goNamed(
+    //         'trackTrip',
+    //         queryParameters: {
+    //           "tripId": message.data['trip_id'],
+    //         },
+    //       );
+    //     }
+    //   }
 
-      break;
+    //   break;
 
     case 'trips/completed':
       if (!isTapped) showNotification(notification);
@@ -98,7 +98,7 @@ Future handleNotification({
     case 'trips/cancelled':
       if (isTapped) showNotification(notification);
 
-      if (!isInForeground) {
+      if (isInForeground) {
         if (context != null) {
           context.goNamed(
             'home',
@@ -110,7 +110,6 @@ Future handleNotification({
 
     case 'trips/ended':
 
-      //TODO: COMPLETE ENDED USECASE
       //navigate to rating page
       if (!isTapped) showNotification(notification);
       break;

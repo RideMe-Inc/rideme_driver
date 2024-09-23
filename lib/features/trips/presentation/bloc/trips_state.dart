@@ -27,6 +27,12 @@ class CancelTripLoaded extends TripsState {
   const CancelTripLoaded({required this.message});
 }
 
+class CancelTripError extends TripsState {
+  final String message;
+
+  const CancelTripError({required this.message});
+}
+
 //! GET ALL TRIP
 
 //loading
@@ -134,6 +140,12 @@ final class RiderTripActionsLoaded extends TripsState {
     required this.tripInfo,
     this.isCompleted,
   });
+}
+
+final class RiderTripActionsError extends TripsState {
+  final String message;
+
+  const RiderTripActionsError({required this.message});
 }
 
 //!GET DIRECTIONS

@@ -27,12 +27,4 @@ class LocationProvider extends ChangeNotifier {
         .buffer
         .asUint8List();
   }
-
-  loadCustomIcon() async {
-    //TODO: GET THE RIGHT IMAGE HERE
-    // final markericon =
-    //     await getBytesFromAsset(ImageNameConstants.locatorPinImg, 150);
-
-    // _customIcon = BitmapDescriptor.bytes(markericon);
-  }
 }

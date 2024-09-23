@@ -38,6 +38,7 @@ class TripAcceptRejectPage extends StatefulWidget {
 
 class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
   final tripsBloc = sl<TripsBloc>();
+  final tripsBloc2 = sl<TripsBloc>();
 
   List<Color> colors = [
     AppColors.rideMeBlueDarker,
@@ -96,7 +97,9 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
 
     //send event
 
-    tripsBloc.add(AcceptRejectTripEvent(params: params));
+    isRejectTrip
+        ? tripsBloc2.add(AcceptRejectTripEvent(params: params))
+        : tripsBloc.add(AcceptRejectTripEvent(params: params));
   }
 
   countdown() {
@@ -140,8 +143,6 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
     tripsBloc.stopAlertSound();
     super.dispose();
   }
-
-  //TODO: CHECK MAP DESIGN WITH POLYLINE STUFF
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +200,7 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
                 alignment: Alignment.topRight,
                 child: Builder(builder: (context) {
                   return BlocBuilder(
-                    bloc: tripsBloc,
+                    bloc: tripsBloc2,
                     builder: (context, state) {
                       if (state is AcceptRejectTripLoading) {
                         return const LoadingIndicator(

@@ -55,10 +55,12 @@ import 'package:rideme_driver/features/trips/domain/usecases/get_directions.dart
 import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:rideme_driver/features/user/data/datasources/localds.dart';
@@ -161,16 +163,10 @@ init() async {
   sl.registerLazySingleton(() => AudioPlayer());
 
   //tts
-  FlutterTts flutterTts = FlutterTts();
+  final flutterTts = FlutterTts();
 
   sl.registerLazySingleton(
-    () async {
-      await flutterTts.setSharedInstance(true);
-      await flutterTts.setSpeechRate(0.4);
-      await flutterTts.awaitSpeakCompletion(true);
-
-      return flutterTts;
-    },
+    () => flutterTts,
   );
 
   //socket
@@ -584,6 +580,18 @@ initTrips() {
   //usecases
 
   sl.registerLazySingleton(
+    () => PlayDirectionSound(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => StopDirectionPlaySound(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
     () => GetDirections(
       repository: sl(),
     ),
@@ -670,6 +678,9 @@ initTrips() {
   );
 
   sl.registerLazySingleton<TripsLocalDatasource>(
-    () => TripsLocalDatasourceImpl(player: sl(), flutterTts: sl()),
+    () => TripsLocalDatasourceImpl(
+      player: sl(),
+      flutterTts: sl(),
+    ),
   );
 }

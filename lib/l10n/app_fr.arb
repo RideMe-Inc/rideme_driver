@@ -475,7 +475,11 @@
 "update":"Mise à jour",
 "minAndDistanceLeft":"{min} away ({distance})",
 
-"tripInformation":"Informations sur le trajet"
+"tripInformation":"Informations sur le trajet",
+
+"arrived":"Arrivé",
+"drivingToStop":"Arrivé à l'arrêt {stop}"
+
 
 
 

@@ -37,6 +37,7 @@ class SvgNameConstants {
   static const userSVG = '$_baseUrl/user.svg';
   static const clockSVG = '$_baseUrl/clock.svg';
   static const searchSVG = '$_baseUrl/search.svg';
+  static const swipeSVG = '$_baseUrl/swipe.svg';
   static const googleLogoSVG = '$_baseUrl/google_watermark.svg';
   static const alertCircle = '$_baseUrl/alert_circle.svg';
 

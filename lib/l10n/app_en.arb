@@ -455,6 +455,20 @@
   "update":"Update",
   "tripInformation":"Trip information",
 
+  "arrived":"Arrived",
+  "drivingToStop":"Arrived at stop {stop}",
+  "@drivingToStop":{
+    "placeholders":{
+      "stop":{
+        "type":"String",
+        "example":"1"
+      }
+    }
+  },
+
+
+  
+
 
 
 

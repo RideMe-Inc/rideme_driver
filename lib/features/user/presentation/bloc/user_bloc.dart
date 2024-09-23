@@ -266,7 +266,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   //login right navigation
   navigateRiderBasedOnProfileCompletion(
       DriverObject? driver, BuildContext context) {
-    print(driver?.extra?.ongoingTrips);
     if (driver == null) {
       context.goNamed('signup');
       return;

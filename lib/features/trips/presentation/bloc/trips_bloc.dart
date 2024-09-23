@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:html/parser.dart';
 import 'package:location/location.dart';
+import 'package:rideme_driver/core/extensions/context_extensions.dart';
 import 'package:rideme_driver/core/extensions/date_extension.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
@@ -86,7 +89,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (error) => GenericTripsError(errorMessage: error),
+          (error) => CancelTripError(message: error),
           (response) => CancelTripLoaded(message: response),
         ),
       );
@@ -207,7 +210,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (l) => GenericTripError(errorMessage: l),
+          (l) => RiderTripActionsError(message: l),
           (r) => RiderTripActionsLoaded(
             tripInfo: r,
             isCompleted: event.isCompleted,
@@ -217,18 +220,21 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     });
 
     //!GET DIRECTIONS
-    on<GetDirectionsEvent>((event, emit) async {
-      emit(GetDirectionsLoading());
+    on<GetDirectionsEvent>(
+      (event, emit) async {
+        emit(GetDirectionsLoading());
 
-      final response = await getDirections(event.params);
+        final response = await getDirections(event.params);
 
-      emit(
-        response.fold(
-          (error) => GetDirectionsError(error: error),
-          (response) => GetDirectionsLoaded(directions: response),
-        ),
-      );
-    });
+        emit(
+          response.fold(
+            (error) => GetDirectionsError(error: error),
+            (response) => GetDirectionsLoaded(directions: response),
+          ),
+        );
+      },
+      transformer: droppable(),
+    );
   }
 
   //return destinations
@@ -528,8 +534,11 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required double distanceLeft,
     required int distanceStepsLength,
     required double totalCurrentDistanceOnStep,
+    required BuildContext context,
   }) {
     double temporalChecker = 0.8 * totalCurrentDistanceOnStep;
+
+    final distance = temporalChecker * 1000;
 
     if (temporalChecker > 0.1) {
       temporalChecker = 0.1;
@@ -539,10 +548,26 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     if ((currentInstructions.length <= 1) ||
         (distanceLeft > temporalChecker) ||
         (currentInstructions.length < distanceStepsLength)) {
+      if (currentInstructions.length == 1) {
+        bool lastSoundPlayChecker =
+            context.read<TripProvider>().finalInstructionSoundPlay;
+
+        if (lastSoundPlayChecker) {
+          playHtmlInstructionSound(
+              instruction:
+                  'In, ${distance.toInt()} meters ${parse(currentInstructions.first.htmlInstructions ?? '').body?.text} ');
+
+          context.read<TripProvider>().updateFinalInstructionSoundPlay = false;
+        }
+      }
       return currentInstructions;
     }
 
     currentInstructions.removeAt(0);
+
+    playHtmlInstructionSound(
+        instruction:
+            'In, ${distance.toInt()} meters ${parse(currentInstructions.first.htmlInstructions ?? '').body?.text} ');
 
     return currentInstructions;
   }
@@ -553,5 +578,62 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     }
 
     return heading;
+  }
+
+  String tripActionInfo(
+      {required TripTrackingDetails? tripTrackingDetails,
+      required BuildContext context}) {
+    String status = tripTrackingDetails?.status ?? 'assigned';
+    String? arrivedAt = tripTrackingDetails?.arrivedAt;
+
+    switch (status) {
+      case 'assigned':
+        return arrivedAt != null
+            ? context.appLocalizations.startTrip
+            : context.appLocalizations.arrived;
+
+      case 'started':
+        if ((tripTrackingDetails?.totalStops ?? 1) -
+                (tripTrackingDetails?.completedStopsCount ?? 0) ==
+            1) {
+          return context.appLocalizations.endTrip;
+        }
+
+        if (tripTrackingDetails?.nextStop?.startedAt == null) {
+          return context.appLocalizations.startTrip;
+        }
+
+        return context.appLocalizations.drivingToStop(
+            '${(tripTrackingDetails?.completedStopsCount ?? 0) + 1}');
+
+      default:
+        return context.appLocalizations.arrived;
+    }
+  }
+
+  String tripActionId({required TripTrackingDetails? tripTrackingDetails}) {
+    String status = tripTrackingDetails?.status ?? 'assigned';
+    String? arrivedAt = tripTrackingDetails?.arrivedAt;
+
+    switch (status) {
+      case 'assigned':
+        return arrivedAt != null ? 'start' : 'arrival';
+
+      case 'started':
+        if ((tripTrackingDetails?.totalStops ?? 1) -
+                (tripTrackingDetails?.completedStopsCount ?? 0) ==
+            1) {
+          return 'complete';
+        }
+
+        if (tripTrackingDetails?.nextStop?.startedAt == null) {
+          return 'start';
+        }
+
+        return 'arrival';
+
+      default:
+        return 'arrival';
+    }
   }
 }

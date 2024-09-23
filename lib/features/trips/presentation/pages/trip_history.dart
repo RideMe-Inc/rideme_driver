@@ -68,9 +68,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
           children: [
             Space.height(context, 0.035),
             BlocConsumer(
-              listener: (context, state) {
-                print(state);
-              },
+              listener: (context, state) {},
               bloc: tripsBloc,
               buildWhen: (previous, current) =>
                   previous != current && current is GetAllTripLoaded,

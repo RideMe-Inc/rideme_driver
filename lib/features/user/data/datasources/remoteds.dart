@@ -69,8 +69,6 @@ class UserRemoteDatasourceImpl
       params: params,
     );
 
-    print(decodedResponse);
-
     return DriverObjectModel.fromJson(decodedResponse);
   }
 

@@ -11,22 +11,29 @@ import 'package:rideme_driver/injection_container.dart';
 
 class CollapseInfoWidget extends StatelessWidget {
   final RiderInfo? user;
-  final String? status, arrivedAt, endTime, totalMin;
+  final String? status,
+      arrivedAt,
+      endTime,
+      totalMin,
+      totalDistanceLeft,
+      startedAt;
   final int? completedStopsCount, totalStops;
-  final String? totalDistanceLeft;
+
   final VoidCallback? onCallTap;
 
-  const CollapseInfoWidget(
-      {super.key,
-      required this.status,
-      required this.arrivedAt,
-      required this.completedStopsCount,
-      required this.totalStops,
-      required this.user,
-      required this.endTime,
-      required this.totalMin,
-      required this.totalDistanceLeft,
-      required this.onCallTap});
+  const CollapseInfoWidget({
+    super.key,
+    required this.status,
+    required this.arrivedAt,
+    required this.completedStopsCount,
+    required this.totalStops,
+    required this.user,
+    required this.endTime,
+    required this.totalMin,
+    required this.totalDistanceLeft,
+    required this.onCallTap,
+    required this.startedAt,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +51,8 @@ class CollapseInfoWidget extends StatelessWidget {
                 height: Sizes.height(context, 0.03),
               ),
             ),
-            status == 'assigned' && arrivedAt != null
+            (status == 'assigned' && arrivedAt != null) ||
+                    (status == 'started' && startedAt == null)
                 ? _WaitingInfoWidget(
                     endWaitTime: endTime!,
                     userName: user?.name ?? '',

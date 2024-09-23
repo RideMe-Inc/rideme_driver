@@ -169,6 +169,8 @@ class TripRemoteDataSourceImpl
       params: params,
     );
 
+    print(decodedResponse);
+
     return TripTrackingDetailsModel.fromJson(decodedResponse['trip']);
   }
 

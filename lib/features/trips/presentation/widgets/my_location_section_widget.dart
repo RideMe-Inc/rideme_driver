@@ -32,12 +32,13 @@ class MyLocationSectionWidget extends StatelessWidget {
               pickup: pickUp,
               dropoff: dropOff,
             ),
-            SizedBox(
-              width: Sizes.width(context, 0.3),
-              child: _CancelTripButton(
-                onTap: onCancelTap,
+            if (onCancelTap != null)
+              SizedBox(
+                width: Sizes.width(context, 0.3),
+                child: _CancelTripButton(
+                  onTap: onCancelTap,
+                ),
               ),
-            ),
           ],
         ),
         Space.height(context, 0.016),
