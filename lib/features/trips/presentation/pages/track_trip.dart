@@ -14,6 +14,7 @@ import 'package:rideme_driver/core/spacing/whitspacing.dart';
 import 'package:rideme_driver/core/theme/app_colors.dart';
 import 'package:rideme_driver/core/widgets/popups/error_popup.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
+import 'package:rideme_driver/features/home/presentation/pages/home_drawer.dart';
 import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
 import 'package:rideme_driver/features/trips/domain/entities/directions_object.dart'
@@ -276,6 +277,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
       ],
       child: Scaffold(
         backgroundColor: Colors.grey,
+        drawer: const HomeDrawer(),
         body: SlidingUpPanel(
           boxShadow: null,
           minHeight: Sizes.height(context, 0.15),
@@ -304,7 +306,7 @@ class _TrackTripPageState extends State<TrackTripPage> {
                   markers: {
                     Marker(
                       markerId: const MarkerId('rider_location'),
-                      icon: homeProvider.customMarkerIcon,
+                      icon: homeProvider.trackingIcon,
                       anchor: const Offset(0.5, 0.5),
                       position: LatLng(riderLocation?.latitude ?? 0,
                           riderLocation?.longitude ?? 0),
@@ -319,6 +321,46 @@ class _TrackTripPageState extends State<TrackTripPage> {
                               tripProvider.polyCoordinates.last.latitude,
                               tripProvider.polyCoordinates.last.longitude))
                   },
+                ),
+              ),
+
+              //MORE SECTION
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Builder(builder: (context) {
+                    return GestureDetector(
+                      onTap: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          Container(
+                            height: Sizes.height(context, 0.05),
+                            width: Sizes.width(context, 0.2),
+                            decoration: const BoxDecoration(
+                              color: AppColors.rideMeWhite500,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 5,
+                                  spreadRadius: 1,
+                                  color: AppColors.rideMeGreyNormalActive,
+                                  offset: Offset(0, 3.5),
+                                )
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.menu,
+                              color: AppColors.rideMeBlackNormal,
+                              size: Sizes.height(context, 0.025),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
                 ),
               ),
 
