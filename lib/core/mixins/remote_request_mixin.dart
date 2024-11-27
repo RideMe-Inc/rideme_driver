@@ -19,6 +19,7 @@ mixin RemoteRequestMixin {
       queryParameters: params['queryParameters'],
       urlParameters: params['urlParameters'],
     );
+    print(uri);
 
     final headers = urls.headers;
 
@@ -26,10 +27,14 @@ mixin RemoteRequestMixin {
       headers.addAll({'Authorization': "Bearer ${params['bearer']}"});
     }
 
+    print(headers);
+
     final response = await client.get(
       uri,
       headers: headers,
     );
+
+    print(response.statusCode);
 
     final decodedResponse = jsonDecode(response.body);
     if (response.statusCode != 200) {

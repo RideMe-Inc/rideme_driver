@@ -132,6 +132,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
           if (state is GetUserProfileError) {
             showErrorPopUp(state.message, context);
+            print('USER PROFILE; ${state.message}');
           }
         },
         child: Padding(
@@ -193,12 +194,18 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   }
 
                   if (state is VerifyOtpLoaded) {
-                    getUserProfile(
-                        state.authenticationInfo.authorization!.token!);
-
                     context.read<AuthenticationProvider>().updateToken =
                         state.authenticationInfo.authorization?.token;
-                    return;
+
+                    if (state.authenticationInfo.userExist ?? false) {
+                      getUserProfile(
+                          state.authenticationInfo.authorization!.token!);
+
+                      return;
+                    }
+
+                    userBloc.navigateRiderBasedOnProfileCompletion(
+                        null, context);
                   }
                 },
                 builder: (context, state) {
