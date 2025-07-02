@@ -46,7 +46,7 @@ import FirebaseMessaging
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ")
+    GMSServices.provideAPIKey("'")
 
     SwiftFlutterBackgroundServicePlugin.taskIdentifier = "background_services"
 
@@ -79,7 +79,7 @@ import FirebaseMessaging
 //     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 //   ) -> Bool {
 
-//     GMSServices.provideAPIKey("AIzaSyAIO-3vFI_0dmGTdOv9oojSnbXNysdXxmQ")
+//     GMSServices.provideAPIKey("'")
 
 //     SwiftFlutterBackgroundServicePlugin.taskIdentifier = "background_services"
 
