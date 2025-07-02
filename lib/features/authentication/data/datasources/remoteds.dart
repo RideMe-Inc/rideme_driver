@@ -100,15 +100,21 @@ class AuthenticationRemoteDatasourceImpl
       urlParameters: null,
     );
 
+    //TODO: CHECK THE AUTH FOR OTHER METHODS
+
+    Map<String, dynamic> finalbody = {};
+
+    try {
+      final fcmToken = await messaging.getToken();
+
+      final body = params['body'];
+
+      finalbody = <String, dynamic>{'fcm_token': fcmToken};
+    } catch (e) {}
+
     //get device fcm token
 
-    final fcmToken = await messaging.getToken();
-
-    final body = params['body'];
-
-    final finalbody = <String, dynamic>{'fcm_token': fcmToken};
-
-    finalbody.addAll(body);
+    finalbody.addAll(params['body']);
 
     //make request
 
@@ -117,6 +123,8 @@ class AuthenticationRemoteDatasourceImpl
       headers: urls.headers,
       body: jsonEncode(finalbody),
     );
+
+    print(response.body);
 
     final decodedResponse = json.decode(response.body);
 

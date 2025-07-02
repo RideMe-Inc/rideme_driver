@@ -19,6 +19,7 @@ class TripTrackingDetails {
       paymentStatus,
       pickupAddress,
       status,
+      arrivedAt,
       completedAt,
       paymentMethod,
       createdAt,
@@ -51,6 +52,7 @@ class TripTrackingDetails {
       required this.paymentMethod,
       required this.createdAt,
       required this.polyline,
+      required this.arrivedAt,
       required this.music,
       required this.conversation,
       required this.nextStop,
@@ -58,13 +60,12 @@ class TripTrackingDetails {
 }
 
 class RiderInfo {
-  final String name;
-  final num id, lat, lng;
+  final String? name, phone;
+  final num? rating;
 
   const RiderInfo({
     required this.name,
-    required this.id,
-    required this.lat,
-    required this.lng,
+    required this.rating,
+    required this.phone,
   });
 }

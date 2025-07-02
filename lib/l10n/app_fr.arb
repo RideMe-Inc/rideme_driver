@@ -472,7 +472,16 @@
 "amountAndCurrency":"$ {amount}",
 "initialAmount":"Montant initial",
 "userDetails":"Détails de l'utilisateur",
-"update":"Mise à jour"
+"update":"Mise à jour",
+"minAndDistanceLeft":"{min} away ({distance})",
+
+"tripInformation":"Informations sur le trajet",
+
+"arrived":"Arrivé",
+"drivingToStop":"Arrivé à l'arrêt {stop}"
+
+
+
 
 
 }

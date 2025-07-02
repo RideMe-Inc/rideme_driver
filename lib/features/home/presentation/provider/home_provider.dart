@@ -10,6 +10,7 @@ class HomeProvider extends ChangeNotifier {
 
   BitmapDescriptor _startIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor _endIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor _trackingIcon = BitmapDescriptor.defaultMarker;
   final Set<Marker> _markers = {};
   String? _refreshedToken;
   // GeoDataInfo? _geoDataInfo;
@@ -29,6 +30,7 @@ class HomeProvider extends ChangeNotifier {
   // GeoDataInfo? get geoDataInfo => _geoDataInfo;
   BitmapDescriptor get startIcon => _startIcon;
   BitmapDescriptor get endIcon => _endIcon;
+  BitmapDescriptor get trackingIcon => _trackingIcon;
   String? get refreshedToken => _refreshedToken;
   // ServiceInfo? get serviceInfo => _serviceInfo;
 
@@ -72,14 +74,18 @@ class HomeProvider extends ChangeNotifier {
 
   //load initial marker
   loadInitialMarker() async {
-    final markericon = await getBytesFromAsset(ImageNameConstants.carIMG, 120);
+    final markericon =
+        await getBytesFromAsset(ImageNameConstants.carTracking, 35);
     final starterIcon =
-        await getBytesFromAsset(ImageNameConstants.driverIMG, 45);
-    final endedIcon = await getBytesFromAsset(ImageNameConstants.driverIMG, 45);
+        await getBytesFromAsset(ImageNameConstants.startTrip, 20);
+    final endedIcon = await getBytesFromAsset(ImageNameConstants.endTrip, 20);
+    final trackingIcon =
+        await getBytesFromAsset(ImageNameConstants.driverTracking, 35);
 
     _customMarkerIcon = BitmapDescriptor.bytes(markericon);
     _startIcon = BitmapDescriptor.bytes(starterIcon);
     _endIcon = BitmapDescriptor.bytes(endedIcon);
+    _trackingIcon = BitmapDescriptor.bytes(trackingIcon);
 
     notifyListeners();
   }

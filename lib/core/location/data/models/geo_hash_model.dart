@@ -7,6 +7,9 @@ class GeoDataModel extends GeoData {
     required super.lng,
     required super.address,
     required super.geoHash,
+    required super.arrivedAt,
+    required super.startedAt,
+    required super.endedAt,
   });
 
   factory GeoDataModel.fromJson(Map<String, dynamic>? json) => GeoDataModel(
@@ -15,5 +18,8 @@ class GeoDataModel extends GeoData {
         lng: json?['lng'],
         address: json?['address'],
         geoHash: json?['geo_hash'],
+        arrivedAt: json?['arrived_at'],
+        startedAt: json?['started_at'],
+        endedAt: json?['ended_at'],
       );
 }

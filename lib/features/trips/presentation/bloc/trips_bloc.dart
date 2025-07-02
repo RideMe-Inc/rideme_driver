@@ -1,12 +1,20 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:html/parser.dart';
+import 'package:location/location.dart';
+import 'package:rideme_driver/core/extensions/context_extensions.dart';
 import 'package:rideme_driver/core/extensions/date_extension.dart';
 
 import 'package:rideme_driver/features/trips/data/models/trip_destnation_info_model.dart';
 import 'package:rideme_driver/features/trips/data/models/trip_request_info_model.dart';
 import 'package:rideme_driver/features/trips/domain/entities/all_trips_details.dart';
+import 'package:rideme_driver/features/trips/domain/entities/directions_object.dart';
 import 'package:rideme_driver/features/trips/domain/entities/trip_destination_data.dart';
 
 import 'package:equatable/equatable.dart';
@@ -20,16 +28,20 @@ import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_directions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
+import 'package:rideme_driver/features/trips/presentation/provider/trip_provider.dart';
 
 part 'trips_event.dart';
 part 'trips_state.dart';
@@ -46,6 +58,9 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
   final GetTripStatus getTripStatus;
   final PlaySound playSound;
   final StopSound stopSound;
+  final PlayDirectionSound playDirectionSound;
+  final StopDirectionPlaySound stopDirectionPlaySound;
+  final GetDirections getDirections;
   final GetTrackingDetails getTrackingDetails;
   final RiderTripDestinationActions riderTripDestinationActions;
 
@@ -61,6 +76,9 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     required this.stopSound,
     required this.getTrackingDetails,
     required this.riderTripDestinationActions,
+    required this.getDirections,
+    required this.playDirectionSound,
+    required this.stopDirectionPlaySound,
   }) : super(TripsInitial()) {
     //! CANCEL TRIP
 
@@ -71,7 +89,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (error) => GenericTripsError(errorMessage: error),
+          (error) => CancelTripError(message: error),
           (response) => CancelTripLoaded(message: response),
         ),
       );
@@ -176,7 +194,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (errorMessage) => GenericTripError(errorMessage: errorMessage),
+          (errorMessage) => GetTrackingDetailsError(message: errorMessage),
           (response) => GetTrackingDetailsLoaded(
             tripInfo: response,
           ),
@@ -192,7 +210,7 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
 
       emit(
         response.fold(
-          (l) => GenericTripError(errorMessage: l),
+          (l) => RiderTripActionsError(message: l),
           (r) => RiderTripActionsLoaded(
             tripInfo: r,
             isCompleted: event.isCompleted,
@@ -200,6 +218,23 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
         ),
       );
     });
+
+    //!GET DIRECTIONS
+    on<GetDirectionsEvent>(
+      (event, emit) async {
+        emit(GetDirectionsLoading());
+
+        final response = await getDirections(event.params);
+
+        emit(
+          response.fold(
+            (error) => GetDirectionsError(error: error),
+            (response) => GetDirectionsLoaded(directions: response),
+          ),
+        );
+      },
+      transformer: droppable(),
+    );
   }
 
   //return destinations
@@ -353,49 +388,252 @@ class TripsBloc extends Bloc<TripsEvent, TripsState> {
     return historyList;
   }
 
-  // //get order page tracking intent
-  // TrackingInfoNotice getSearchTrackInfo(
-  //   TrackingInfo? trackingInfo,
-  //   BuildContext context,
-  // ) {
-  //   switch (trackingInfo?.status ?? 'searching') {
-  //     case 'searching':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.checkingForCar,
-  //         subtitle: context.appLocalizations.checkingForCarInfo,
-  //       );
-
-  //     case 'driver-found':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.availableDriverFound,
-  //         subtitle: context.appLocalizations.availableDriverFoundInfo,
-  //       );
-
-  //     case 'driver-not-found':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.driverNotFound,
-  //         subtitle: context.appLocalizations.driverNotFoundInfo,
-  //       );
-
-  //     case 'driver-assigned':
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.driverNotFound,
-  //         subtitle: context.appLocalizations.driverNotFoundInfo,
-  //       );
-
-  //     default:
-  //       return TrackingInfoNotice(
-  //         header: context.appLocalizations.checkingForCar,
-  //         subtitle: context.appLocalizations.checkingForCarInfo,
-  //       );
-  //   }
-  // }
-
   Future playAlertSound(String path) async {
     return await playSound.call(path);
   }
 
   Future stopAlertSound() async {
     return await stopSound.call();
+  }
+
+  Future playHtmlInstructionSound({required String instruction}) async {
+    return await playDirectionSound.call(instruction);
+  }
+
+  Future stopHtmlInstructionSound() async {
+    return await stopDirectionPlaySound.call();
+  }
+
+  String dropOffString(
+      {required int totalStops, required int completedStopsCount}) {
+    if (totalStops - completedStopsCount == 1) {
+      return 'Drop off ';
+    } else {
+      return totalStops - completedStopsCount == 2
+          ? 'Going to stop '
+          : 'Going to stop ${completedStopsCount + 1} ';
+    }
+  }
+
+  //get distance between rider and user
+  Future<double> getDistanceFromLatLonInKm({
+    required LocationData currentLocation,
+    required LatLng endPoint,
+  }) async {
+    final stringgyDistance = convertToKM(
+      pickup:
+          LatLng(currentLocation.latitude ?? 0, currentLocation.longitude ?? 0),
+      dropOff: endPoint,
+    );
+
+    return double.parse(stringgyDistance);
+  }
+
+  String convertToKM({required LatLng pickup, required LatLng dropOff}) {
+    const radius = 6371; // Radius of the earth in km
+    final dLat = degToRad(pickup.latitude - dropOff.latitude); // degToRad below
+    final dLon = degToRad(pickup.longitude - dropOff.longitude);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(degToRad(dropOff.latitude)) *
+            cos(degToRad(pickup.latitude)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final distance = radius * c; // Distance in km
+
+    return distance.toStringAsFixed(2);
+  }
+
+  //degree to radians
+
+  double degToRad(deg) {
+    return (deg * pi) / 180;
+  }
+
+  Future<bool> reCallDirectionsApi(
+      {required BuildContext context, required Position riderLocation}) async {
+    bool callGoogle = false;
+    List<LatLng> polyCoordinates = context.read<TripProvider>().polyCoordinates;
+
+    final latLngPosition =
+        LatLng(riderLocation.latitude, riderLocation.longitude);
+
+    if (polyCoordinates.length > 1) {
+      for (int i = 0; i < polyCoordinates.length; i++) {
+        if (i + 1 == polyCoordinates.length) {
+          return false;
+        }
+        final distanceKm1 = double.parse(
+            convertToKM(pickup: latLngPosition, dropOff: polyCoordinates[i]));
+        final distanceKm2 = double.parse(convertToKM(
+            pickup: latLngPosition, dropOff: polyCoordinates[i + 1]));
+
+        if (distanceKm1 > distanceKm2) {
+          //meaning he is on the right path
+
+          polyCoordinates.removeRange(i, i + 1);
+        } else {
+          //there is a deviation. check for upward adjustment
+
+          if (distanceKm1 > 0.05) {
+            callGoogle = true;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+
+    context.read<TripProvider>().updatePolyCoordinates = polyCoordinates;
+
+    if (!context.mounted) return false;
+
+    return callGoogle;
+  }
+
+  //UPDATE STEPS IF NEEDED
+
+  List<Steps> updateStepsIfNeeded(
+      {required List<Steps> currentSteps,
+      required List<LatLng> currentPolyline}) {
+    // print(currentPolyline);
+    // print(
+    //     '${currentSteps.first.endLocation?.lat} ${currentSteps.first.endLocation?.lng}');
+
+    List<Steps> holderSteps = currentSteps;
+
+    if (currentSteps.isEmpty) {
+      return currentSteps;
+    }
+
+    for (var step in holderSteps) {
+      if (currentPolyline.contains(LatLng(
+          double.parse(step.endLocation!.lat!.toStringAsFixed(5)),
+          double.parse(step.endLocation!.lng!.toStringAsFixed(5))))) {
+        return currentSteps;
+      } else {
+        currentSteps.remove(step);
+        return currentSteps;
+      }
+    }
+
+    return currentSteps;
+  }
+
+  //UPDATE DISTANCE
+  double updateDistanceOnActiveStep(
+      {required Steps currentStep, required Position riderLocation}) {
+    return double.parse(convertToKM(
+        pickup: LatLng(riderLocation.latitude, riderLocation.longitude),
+        dropOff: LatLng(
+            currentStep.endLocation!.lat!, currentStep.endLocation!.lng!)));
+  }
+
+  List<Steps> updateInstructionsIfNeeded({
+    required List<Steps> currentInstructions,
+    required double distanceLeft,
+    required int distanceStepsLength,
+    required double totalCurrentDistanceOnStep,
+    required BuildContext context,
+  }) {
+    double temporalChecker = 0.8 * totalCurrentDistanceOnStep;
+
+    final distance = temporalChecker * 1000;
+
+    if (temporalChecker > 0.1) {
+      temporalChecker = 0.1;
+      //0.1 is 100 meters
+    }
+
+    if ((currentInstructions.length <= 1) ||
+        (distanceLeft > temporalChecker) ||
+        (currentInstructions.length < distanceStepsLength)) {
+      if (currentInstructions.length == 1) {
+        bool lastSoundPlayChecker =
+            context.read<TripProvider>().finalInstructionSoundPlay;
+
+        if (lastSoundPlayChecker) {
+          playHtmlInstructionSound(
+              instruction:
+                  'In, ${distance.toInt()} meters ${parse(currentInstructions.first.htmlInstructions ?? '').body?.text} ');
+
+          context.read<TripProvider>().updateFinalInstructionSoundPlay = false;
+        }
+      }
+      return currentInstructions;
+    }
+
+    currentInstructions.removeAt(0);
+
+    playHtmlInstructionSound(
+        instruction:
+            'In, ${distance.toInt()} meters ${parse(currentInstructions.first.htmlInstructions ?? '').body?.text} ');
+
+    return currentInstructions;
+  }
+
+  int returnHeading(int heading) {
+    if (heading < 0) {
+      return heading + 360;
+    }
+
+    return heading;
+  }
+
+  String tripActionInfo(
+      {required TripTrackingDetails? tripTrackingDetails,
+      required BuildContext context}) {
+    String status = tripTrackingDetails?.status ?? 'assigned';
+    String? arrivedAt = tripTrackingDetails?.arrivedAt;
+
+    switch (status) {
+      case 'assigned':
+        return arrivedAt != null
+            ? context.appLocalizations.startTrip
+            : context.appLocalizations.arrived;
+
+      case 'started':
+        if ((tripTrackingDetails?.totalStops ?? 1) -
+                (tripTrackingDetails?.completedStopsCount ?? 0) ==
+            1) {
+          return context.appLocalizations.endTrip;
+        }
+
+        if (tripTrackingDetails?.nextStop?.startedAt == null) {
+          return context.appLocalizations.startTrip;
+        }
+
+        return context.appLocalizations.drivingToStop(
+            '${(tripTrackingDetails?.completedStopsCount ?? 0) + 1}');
+
+      default:
+        return context.appLocalizations.arrived;
+    }
+  }
+
+  String tripActionId({required TripTrackingDetails? tripTrackingDetails}) {
+    String status = tripTrackingDetails?.status ?? 'assigned';
+    String? arrivedAt = tripTrackingDetails?.arrivedAt;
+
+    switch (status) {
+      case 'assigned':
+        return arrivedAt != null ? 'start' : 'arrival';
+
+      case 'started':
+        if ((tripTrackingDetails?.totalStops ?? 1) -
+                (tripTrackingDetails?.completedStopsCount ?? 0) ==
+            1) {
+          return 'complete';
+        }
+
+        if (tripTrackingDetails?.nextStop?.startedAt == null) {
+          return 'start';
+        }
+
+        return 'arrival';
+
+      default:
+        return 'arrival';
+    }
   }
 }

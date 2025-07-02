@@ -10,6 +10,7 @@ import 'package:rideme_driver/core/theme/app_colors.dart';
 import 'package:rideme_driver/core/widgets/loaders/loading_indicator.dart';
 import 'package:rideme_driver/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:rideme_driver/features/authentication/presentation/provider/authentication_provider.dart';
+import 'package:rideme_driver/features/home/presentation/provider/home_provider.dart';
 import 'package:rideme_driver/features/localization/presentation/providers/locale_provider.dart';
 import 'package:rideme_driver/features/permissions/presentation/bloc/permission_bloc.dart';
 import 'package:rideme_driver/features/user/presentation/bloc/user_bloc.dart';
@@ -64,7 +65,9 @@ class _ConnectionPageState extends State<ConnectionPage> {
 
   @override
   void initState() {
+    context.read<HomeProvider>().loadInitialMarker();
     authBloc.add(RecoverTokenEvent());
+
     startTimer();
     super.initState();
   }
@@ -148,11 +151,13 @@ class _ConnectionPageState extends State<ConnectionPage> {
             listener: (context, state) {
               if (state is GetUserProfileLoaded) {
                 //udpate provider with user data and navigate to home
-                context.read<UserProvider>().updateUserInfo = state.user;
-                userBloc.cacheRiderID(state.user.id?.toInt() ?? 1);
+                context.read<UserProvider>().updateUserInfo =
+                    state.driver.profile;
+
+                userBloc.cacheRiderID(state.driver.profile.id!.toInt());
 
                 userBloc.navigateRiderBasedOnProfileCompletion(
-                    state.user, context);
+                    state.driver, context);
               }
 
               if (state is GetUserProfileError) {

@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rideme_driver/core/network/networkinfo.dart';
@@ -50,13 +51,16 @@ import 'package:rideme_driver/features/trips/domain/repository/trips_repository.
 import 'package:rideme_driver/features/trips/domain/usecases/accept_reject_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/cancel_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_all_trips.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/get_directions.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_tracking_details.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_info.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/get_trip_status.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/play_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/play_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rate_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/report_trip.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/rider_trip_destination_actions.dart';
+import 'package:rideme_driver/features/trips/domain/usecases/stop_direction_sound.dart';
 import 'package:rideme_driver/features/trips/domain/usecases/stop_sound.dart';
 import 'package:rideme_driver/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:rideme_driver/features/user/data/datasources/localds.dart';
@@ -157,6 +161,13 @@ init() async {
 
   //audio player
   sl.registerLazySingleton(() => AudioPlayer());
+
+  //tts
+  final flutterTts = FlutterTts();
+
+  sl.registerLazySingleton(
+    () => flutterTts,
+  );
 
   //socket
   sl.registerLazySingleton<WebSocket>(() {
@@ -560,10 +571,31 @@ initTrips() {
       stopSound: sl(),
       getTrackingDetails: sl(),
       riderTripDestinationActions: sl(),
+      getDirections: sl(),
+      playDirectionSound: sl(),
+      stopDirectionPlaySound: sl(),
     ),
   );
 
   //usecases
+
+  sl.registerLazySingleton(
+    () => PlayDirectionSound(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => StopDirectionPlaySound(
+      repository: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetDirections(
+      repository: sl(),
+    ),
+  );
 
   sl.registerLazySingleton(
     () => RiderTripDestinationActions(
@@ -646,6 +678,9 @@ initTrips() {
   );
 
   sl.registerLazySingleton<TripsLocalDatasource>(
-    () => TripsLocalDatasourceImpl(player: sl()),
+    () => TripsLocalDatasourceImpl(
+      player: sl(),
+      flutterTts: sl(),
+    ),
   );
 }

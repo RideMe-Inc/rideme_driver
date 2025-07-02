@@ -38,6 +38,7 @@ class TripAcceptRejectPage extends StatefulWidget {
 
 class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
   final tripsBloc = sl<TripsBloc>();
+  final tripsBloc2 = sl<TripsBloc>();
 
   List<Color> colors = [
     AppColors.rideMeBlueDarker,
@@ -83,7 +84,7 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
     if (!mounted) return;
     final params = {
       "locale": context.appLocalizations.localeName,
-      "bearer": "Bearer ${context.read<HomeProvider>().refreshedToken}",
+      "bearer": context.read<HomeProvider>().refreshedToken,
       "body": {
         "lat": position.latitude,
         "lng": position.longitude,
@@ -96,7 +97,9 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
 
     //send event
 
-    tripsBloc.add(AcceptRejectTripEvent(params: params));
+    isRejectTrip
+        ? tripsBloc2.add(AcceptRejectTripEvent(params: params))
+        : tripsBloc.add(AcceptRejectTripEvent(params: params));
   }
 
   countdown() {
@@ -136,6 +139,7 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
   @override
   void dispose() {
     colorTimer.cancel();
+    timer?.cancel();
     tripsBloc.stopAlertSound();
     super.dispose();
   }
@@ -196,7 +200,7 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
                 alignment: Alignment.topRight,
                 child: Builder(builder: (context) {
                   return BlocBuilder(
-                    bloc: tripsBloc,
+                    bloc: tripsBloc2,
                     builder: (context, state) {
                       if (state is AcceptRejectTripLoading) {
                         return const LoadingIndicator(
@@ -343,27 +347,33 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text(
-                              tripRequestInfo?.timeToPickup != null
-                                  ? DateFormat('m').format(
-                                      DateFormat('Hms', 'en_US')
-                                          .parse(tripRequestInfo!.timeToPickup),
-                                    )
-                                  : '5',
-                              style: context.textTheme.displayLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.rideMeBackgroundLight,
+                            SizedBox(
+                              width: Sizes.width(context, 0.25),
+                              child: Text(
+                                tripRequestInfo?.timeToPickup != null
+                                    ? DateFormat('m').format(
+                                        DateFormat('Hms', 'en_US').parse(
+                                            tripRequestInfo!.timeToPickup),
+                                      )
+                                    : '5',
+                                style: context.textTheme.displayLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.rideMeBackgroundLight,
+                                ),
                               ),
                             ),
                             RideRequestTimer(
                               timer: timer,
                               seconds: seconds,
                             ),
-                            Text(
-                              '${tripRequestInfo?.distanceToPickup ?? 0} km',
-                              style: context.textTheme.displayLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.rideMeBackgroundLight,
+                            SizedBox(
+                              width: Sizes.width(context, 0.25),
+                              child: Text(
+                                '${tripRequestInfo?.distanceToPickup ?? 0} km',
+                                style: context.textTheme.displayLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.rideMeBackgroundLight,
+                                ),
                               ),
                             ),
                           ],
@@ -373,7 +383,10 @@ class _TripAcceptRejectPageState extends State<TripAcceptRejectPage> {
                           bloc: tripsBloc,
                           builder: (context, state) {
                             if (state is AcceptRejectTripLoading) {
-                              return const LoadingIndicator();
+                              return const LoadingIndicator(
+                                indicatorColor: AppColors.rideMeBackgroundLight,
+                                backgroundColor: Colors.transparent,
+                              );
                             }
 
                             return GenericButton(

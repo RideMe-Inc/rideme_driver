@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:rideme_driver/background_services.dart';
+
 import 'package:rideme_driver/core/notifications/notif_handling.dart';
 import 'package:rideme_driver/core/routes/go_router_config.dart';
 import 'package:rideme_driver/core/theme/app_theme.dart';
@@ -41,6 +42,7 @@ main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await di.init();
+
   await initializeService();
 
   runApp(

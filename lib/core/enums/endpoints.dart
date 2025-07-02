@@ -15,7 +15,7 @@ enum Endpoints {
   licenses(value: '/licenses'),
   vehicles(value: '/vehicles'),
   editVehicles(value: '/vehicles/:vehicleId'),
-  availability(value: '/profile/availability'),
+  availability(value: '/profile/availabilities'),
   photoCheck(value: '/photo-check'),
   getSupportContacts(value: '/configs/support-contact'),
 
@@ -23,6 +23,7 @@ enum Endpoints {
   trip(value: '/trips'),
   bookTrip(value: '/trips/:id/book'),
   tripDetails(value: '/trips/:id'),
+  trackTrip(value: '/trips/:id/tracking'),
   reportTrip(value: '/trips/:id/reports'),
   rateTrip(value: '/trips/:id/ratings'),
   tripActions(value: '/trips/:id/:actions'),

@@ -77,3 +77,10 @@ final class RiderTripActionsEvent extends TripsEvent {
     this.isCompleted,
   });
 }
+
+//!GET DIRECTIONS
+final class GetDirectionsEvent extends TripsEvent {
+  final Map<String, dynamic> params;
+
+  const GetDirectionsEvent({required this.params});
+}

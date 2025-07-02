@@ -76,28 +76,40 @@ Future handleNotification({
 
       break;
 
-    case 'trips/assigned' || 'trips/started' || 'trips/updated':
+    // case 'trips/assigned' || 'trips/started' || 'trips/updated':
+    //   if (!isTapped) showNotification(notification);
+    //   if (!isInForeground) {
+    //     if (context != null) {
+    //       context.goNamed(
+    //         'trackTrip',
+    //         queryParameters: {
+    //           "tripId": message.data['trip_id'],
+    //         },
+    //       );
+    //     }
+    //   }
+
+    //   break;
+
+    case 'trips/completed':
       if (!isTapped) showNotification(notification);
-      if (!isInForeground) {
+      break;
+
+    case 'trips/cancelled':
+      if (isTapped) showNotification(notification);
+
+      if (isInForeground) {
         if (context != null) {
           context.goNamed(
-            'trackTrip',
-            queryParameters: {
-              "tripId": message.data['trip_id'],
-            },
+            'home',
           );
         }
       }
 
       break;
 
-    case 'trips/completed':
-      if (!isTapped) showNotification(notification);
-      break;
-
     case 'trips/ended':
 
-      //TODO: COMPLETE ENDED USECASE
       //navigate to rating page
       if (!isTapped) showNotification(notification);
       break;

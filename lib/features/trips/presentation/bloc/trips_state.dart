@@ -27,6 +27,12 @@ class CancelTripLoaded extends TripsState {
   const CancelTripLoaded({required this.message});
 }
 
+class CancelTripError extends TripsState {
+  final String message;
+
+  const CancelTripError({required this.message});
+}
+
 //! GET ALL TRIP
 
 //loading
@@ -117,6 +123,12 @@ final class GetTrackingDetailsLoaded extends TripsState {
   const GetTrackingDetailsLoaded({required this.tripInfo});
 }
 
+final class GetTrackingDetailsError extends TripsState {
+  final String message;
+
+  const GetTrackingDetailsError({required this.message});
+}
+
 //!RIDER TRIP ACTIONS
 final class RiderTripActionsLoading extends TripsState {}
 
@@ -128,6 +140,27 @@ final class RiderTripActionsLoaded extends TripsState {
     required this.tripInfo,
     this.isCompleted,
   });
+}
+
+final class RiderTripActionsError extends TripsState {
+  final String message;
+
+  const RiderTripActionsError({required this.message});
+}
+
+//!GET DIRECTIONS
+final class GetDirectionsLoading extends TripsState {}
+
+final class GetDirectionsLoaded extends TripsState {
+  final DirectionsObject directions;
+
+  const GetDirectionsLoaded({required this.directions});
+}
+
+final class GetDirectionsError extends TripsState {
+  final String error;
+
+  const GetDirectionsError({required this.error});
 }
 
 //! ERROR

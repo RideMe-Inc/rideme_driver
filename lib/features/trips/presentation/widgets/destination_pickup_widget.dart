@@ -35,9 +35,9 @@ class TripPickUpDestinationWidget extends StatelessWidget {
           child: const DottedLine(
             direction: Axis.vertical,
             dashColor: AppColors.rideMeBlackNormal,
-            lineLength: 35,
+            lineLength: 50,
             lineThickness: 2,
-            dashLength: 35,
+            dashLength: 50,
           ),
         ),
         _LocationTile(
@@ -63,9 +63,11 @@ class _LocationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SvgPicture.asset(isStart
                 ? SvgNameConstants.dropOffPointActiveSVG
@@ -73,13 +75,27 @@ class _LocationTile extends StatelessWidget {
             Space.width(context, 0.032),
             SizedBox(
               width: Sizes.width(context, 0.5),
-              child: Text(
-                address,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isStart
+                        ? context.appLocalizations.pickupLocation
+                        : context.appLocalizations.dropOffLocation,
+                    style: context.textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    address,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.rideMeGreyDarker,
+                    ),
+                  ),
+                ],
               ),
             )
           ],

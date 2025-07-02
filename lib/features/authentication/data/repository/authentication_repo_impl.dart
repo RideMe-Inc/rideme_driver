@@ -142,6 +142,9 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
         // cache authorization token
         await localDatasource.clearAuthorizationCache();
 
+        //remove user id cache
+        await userLocalDatasource.removeRiderId();
+
         return Right(response);
       } catch (e) {
         if (e is ErrorException) {

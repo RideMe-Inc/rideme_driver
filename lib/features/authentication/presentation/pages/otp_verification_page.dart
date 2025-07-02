@@ -123,13 +123,16 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         listener: (context, state) {
           if (state is GetUserProfileLoaded) {
             //udpate provider with user data and navigate to home
-            context.read<UserProvider>().updateUserInfo = state.user;
-            userBloc.cacheRiderID(state.user.id?.toInt() ?? 1);
-            userBloc.navigateRiderBasedOnProfileCompletion(state.user, context);
+            context.read<UserProvider>().updateUserInfo = state.driver.profile;
+            userBloc.cacheRiderID(state.driver.profile.id!.toInt());
+
+            userBloc.navigateRiderBasedOnProfileCompletion(
+                state.driver, context);
           }
 
           if (state is GetUserProfileError) {
             showErrorPopUp(state.message, context);
+            print('USER PROFILE; ${state.message}');
           }
         },
         child: Padding(
@@ -191,12 +194,18 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   }
 
                   if (state is VerifyOtpLoaded) {
-                    getUserProfile(
-                        state.authenticationInfo.authorization!.token!);
-
                     context.read<AuthenticationProvider>().updateToken =
                         state.authenticationInfo.authorization?.token;
-                    return;
+
+                    if (state.authenticationInfo.userExist ?? false) {
+                      getUserProfile(
+                          state.authenticationInfo.authorization!.token!);
+
+                      return;
+                    }
+
+                    userBloc.navigateRiderBasedOnProfileCompletion(
+                        null, context);
                   }
                 },
                 builder: (context, state) {

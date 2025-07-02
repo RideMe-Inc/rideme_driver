@@ -159,7 +159,7 @@ final GoRouter goRouterConfiguration = GoRouter(
 
     GoRoute(
       name: 'tripStatusCheck',
-      path: 'trip-status-check',
+      path: '/trip-status-check',
       builder: (context, state) => TripStatusChecker(
         tripData: state.uri.queryParameters['tripData'],
         tripId: state.uri.queryParameters['tripId'],
@@ -169,7 +169,7 @@ final GoRouter goRouterConfiguration = GoRouter(
     //TRIP ACCEPT REJECT
     GoRoute(
       name: 'tripAcceptReject',
-      path: 'trip-accept-reject',
+      path: '/trip-accept-reject',
       builder: (context, state) => TripAcceptRejectPage(
         tripRequestInfo: state.uri.queryParameters['tripinfo']!,
       ),
@@ -177,7 +177,7 @@ final GoRouter goRouterConfiguration = GoRouter(
 
     GoRoute(
       name: 'trackTrip',
-      path: 'track-trip',
+      path: '/track-trip',
       builder: (context, state) =>
           TrackTripPage(tripId: state.uri.queryParameters['tripId']!),
     )

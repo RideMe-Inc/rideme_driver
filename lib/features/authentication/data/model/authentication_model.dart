@@ -7,6 +7,7 @@ class AuthenticationModel extends Authentication {
     required super.message,
     required super.authorization,
     required super.user,
+    required super.userExist,
   });
 
   factory AuthenticationModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class AuthenticationModel extends Authentication {
       message: json['message'],
       authorization: AuthorizationModel.fromJson(json['authorization']),
       user: UserModel.fromJson(json['user']),
+      userExist: json['user_exist'],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideme_driver/core/usecase/usecase.dart';
+import 'package:rideme_driver/features/user/domain/entities/driver_object.dart';
 import 'package:rideme_driver/features/user/domain/entities/license_info.dart';
 import 'package:rideme_driver/features/user/domain/entities/rider_vehicle.dart';
 import 'package:rideme_driver/features/user/domain/entities/support_data.dart';
@@ -72,7 +73,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(
         response.fold(
           (l) => GetUserProfileError(message: l),
-          (r) => GetUserProfileLoaded(user: r),
+          (r) => GetUserProfileLoaded(driver: r),
         ),
       );
     });
@@ -263,20 +264,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   //login right navigation
-  navigateRiderBasedOnProfileCompletion(User? driver, BuildContext context) {
+  navigateRiderBasedOnProfileCompletion(
+      DriverObject? driver, BuildContext context) {
     if (driver == null) {
       context.goNamed('signup');
       return;
     }
-    if ((driver.hasLicense ?? false) &&
-        (driver.hasVehicle ?? false) &&
-        (driver.photoCheckRequired ?? true) != true) {
-      context.goNamed('home');
-    } else if (!(driver.hasVehicle ?? false)) {
+    if ((driver.profile.hasLicense ?? false) &&
+        (driver.profile.hasVehicle ?? false) &&
+        (driver.profile.photoCheckRequired ?? true) != true) {
+      driver.extra != null && driver.extra!.ongoingTrips.isNotEmpty
+          ? context.goNamed('trackTrip', queryParameters: {
+              'tripId': driver.extra!.ongoingTrips.first.id.toString()
+            })
+          : context.goNamed('home');
+    } else if (!(driver.profile.hasVehicle ?? false)) {
       context.goNamed('vehicleInformation');
-    } else if (!(driver.hasLicense ?? false)) {
+    } else if (!(driver.profile.hasLicense ?? false)) {
       context.goNamed('licenseInformation');
-    } else if (driver.photoCheckRequired ?? false) {
+    } else if (driver.profile.photoCheckRequired ?? false) {
       context.goNamed('photoCheck');
     } else {
       context.goNamed('signup');

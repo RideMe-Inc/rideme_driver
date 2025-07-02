@@ -51,7 +51,6 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 void onStart(ServiceInstance service) async {
   final socket = WebSocket(Uri.parse('wss://dss.rideme.app'));
 
-  final sharedPreferences = await SharedPreferences.getInstance();
   int? riderId;
 
   socket.connection.listen(
@@ -70,33 +69,50 @@ void onStart(ServiceInstance service) async {
     },
   );
 
-  Timer.periodic(const Duration(seconds: 3), (timer) async {
-    riderId ??= sharedPreferences.getInt('rider_id_cache');
+  final sharedPreferences = await SharedPreferences.getInstance();
 
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
-        forceAndroidLocationManager: true,
+  riderId = sharedPreferences.getInt('rider_id_cache');
+
+  Timer.periodic(const Duration(seconds: 4), (timer) async {
+    if (riderId == null) {
+      stopBackgroundService();
+
+      Timer.periodic(
+        const Duration(seconds: 20),
+        (timer) {
+          startBackgroundService();
+        },
       );
+    }
 
-      final params = {
-        "event": "geo-update",
-        "data": {
-          "lat": position.latitude,
-          "lng": position.longitude,
-          "heading": position.heading,
-          "rider_id": riderId ?? '',
+    if (riderId != null) {
+      try {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          forceAndroidLocationManager: true,
+        );
+
+        final params = {
+          "event": "geo-update",
+          "data": {
+            "lat": position.latitude,
+            "lng": position.longitude,
+            "heading": position.heading,
+            "driver_id": riderId,
+          }
+        };
+
+        if (kDebugMode) print(riderId);
+
+        socket.send(jsonEncode(params));
+
+        if (kDebugMode) {
+          print('lat:${position.latitude}, lng:${position.longitude}');
         }
-      };
-
-      socket.send(jsonEncode(params));
-
-      if (kDebugMode) {
-        print('lat:${position.latitude}, lng:${position.longitude}');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
       }
     }
   });

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class GeoData extends Equatable {
   final num? id, lat, lng;
-  final String? address, geoHash;
+  final String? address, geoHash, arrivedAt, startedAt, endedAt;
 
   const GeoData({
     required this.id,
@@ -10,6 +10,9 @@ class GeoData extends Equatable {
     required this.lng,
     required this.address,
     required this.geoHash,
+    required this.arrivedAt,
+    required this.startedAt,
+    required this.endedAt,
   });
 
   @override
@@ -19,6 +22,9 @@ class GeoData extends Equatable {
         lng,
         address,
         geoHash,
+        arrivedAt,
+        startedAt,
+        endedAt,
       ];
 
   Map<String, dynamic> toMap() => {

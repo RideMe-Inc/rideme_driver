@@ -13,9 +13,9 @@ class UserInitial extends UserState {}
 final class GetUserProfileLoading extends UserState {}
 
 final class GetUserProfileLoaded extends UserState {
-  final User user;
+  final DriverObject driver;
 
-  const GetUserProfileLoaded({required this.user});
+  const GetUserProfileLoaded({required this.driver});
 }
 
 final class GetUserProfileError extends UserState {
